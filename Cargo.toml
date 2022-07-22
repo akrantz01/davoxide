@@ -8,6 +8,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-axum = "0.5.13"
+axum = { version = "0.5.13", default-features = false, features = ["headers", "http1", "http2"] }
 dav-server = { version = "0.3.4", default-features = false, features = ["localfs"] }
 tokio = { version = "1.20.0", features = ["macros", "rt", "rt-multi-thread"] }
