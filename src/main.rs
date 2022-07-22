@@ -8,6 +8,7 @@ use axum::{
 use dav_server::{body::Body as DavBody, localfs::LocalFs, memls::MemLs, DavHandler};
 use eyre::WrapErr;
 use std::env;
+use tokio::signal;
 use tracing::{info, warn};
 
 mod authentication;
@@ -34,6 +35,29 @@ async fn main() -> eyre::Result<()> {
         .layer(middleware::from_fn(authentication::middleware))
         .layer(logging::layer());
 
+    // Setup shutdown handler for Ctrl+C and SIGTERM
+    let shutdown = || async {
+        let ctrl_c = async {
+            signal::ctrl_c()
+                .await
+                .expect("failed to install ctrl+c handler")
+        };
+        let terminate = async {
+            signal::unix::signal(signal::unix::SignalKind::terminate())
+                .expect("failed to install terminate signal handler")
+                .recv()
+                .await
+        };
+
+        tokio::select! {
+            _ = ctrl_c => {},
+            _ = terminate => {},
+        }
+
+        info!("server successfully shutdown");
+        info!("goodbye :)");
+    };
+
     let address = env::var("ADDRESS")
         .unwrap_or_else(|_| String::from("127.0.0.1:3000"))
         .parse()
@@ -43,6 +67,7 @@ async fn main() -> eyre::Result<()> {
     info!(%address, "listening and ready to handle requests");
     Server::bind(&address)
         .serve(app.into_make_service())
+        .with_graceful_shutdown(shutdown())
         .await
         .wrap_err("failed to start server")?;
 
