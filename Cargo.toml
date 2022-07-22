@@ -10,4 +10,9 @@ edition = "2021"
 [dependencies]
 axum = { version = "0.5.13", default-features = false, features = ["headers", "http1", "http2"] }
 dav-server = { version = "0.3.4", default-features = false, features = ["localfs"] }
+dotenv = "0.15.0"
 tokio = { version = "1.20.0", features = ["macros", "rt", "rt-multi-thread"] }
+tower-http = { version = "0.3.4", default-features = false, features = ["request-id", "trace"] }
+tracing = "0.1.35"
+tracing-subscriber = { version = "0.3.15", features = ["env-filter"] }
+uuid = { version = "1.1.2", features = ["v4"] }
