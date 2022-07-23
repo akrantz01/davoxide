@@ -12,6 +12,8 @@ use tokio::signal;
 use tracing::{info, warn};
 
 mod authentication;
+mod database;
+mod error;
 mod logging;
 
 #[tokio::main]
@@ -21,6 +23,11 @@ async fn main() -> eyre::Result<()> {
         warn!(".env file not found");
     }
     tracing_subscriber::fmt::init();
+
+    let db = {
+        let url = env::var("DATABASE_URL").wrap_err("missing DATABASE_URL in environment")?;
+        database::connect(url).await?
+    };
 
     let webdav = DavHandler::builder()
         .strip_prefix("/dav")
@@ -33,6 +40,7 @@ async fn main() -> eyre::Result<()> {
         .route("/dav/*path", any(webdav_handler))
         .layer(Extension(webdav))
         .layer(middleware::from_fn(authentication::middleware))
+        .layer(Extension(db))
         .layer(logging::layer());
 
     // Setup shutdown handler for Ctrl+C and SIGTERM

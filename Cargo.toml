@@ -7,12 +7,17 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[workspace]
+members = ["migration"]
+
 [dependencies]
 axum = { version = "0.5.13", default-features = false, features = ["headers", "http1", "http2"] }
 color-eyre = { version = "0.6.2", default-features = false, features = ["track-caller"] }
 dav-server = { version = "0.3.4", default-features = false, features = ["localfs"] }
+davoxide-migrations = { path = "migration" }
 dotenv = "0.15.0"
 eyre = "0.6.8"
+sea-orm = { version = "0.9.1", features = ["debug-print", "macros", "sqlx-postgres", "runtime-tokio-rustls"] }
 tokio = { version = "1.20.0", features = ["macros", "rt", "rt-multi-thread", "signal"] }
 tower-http = { version = "0.3.4", default-features = false, features = ["request-id", "trace"] }
 tracing = "0.1.35"

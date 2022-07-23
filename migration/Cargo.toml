@@ -1,0 +1,13 @@
+[package]
+name = "davoxide-migrations"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+name = "migrations"
+path = "src/lib.rs"
+
+[dependencies]
+sea-orm-migration = { version = "0.9.1", features = ["runtime-tokio-rustls", "sqlx-postgres"] }
+tokio = { version = "1.20.0", features = ["macros", "rt", "rt-multi-thread"] }
