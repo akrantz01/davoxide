@@ -11,14 +11,6 @@ use uuid::Uuid;
 pub struct UserManager;
 
 impl UserManager {
-    /// Find a user by their ID
-    pub async fn find_by_id(
-        db: &DatabaseConnection,
-        id: i32,
-    ) -> Result<Option<user::Model>, DbErr> {
-        User::find_by_id(id).one(db).await
-    }
-
     /// Find a user by their username
     pub async fn find_by_username(
         db: &DatabaseConnection,
@@ -95,7 +87,6 @@ impl UserManager {
         name: String,
     ) -> Result<user::Model, DbErr> {
         let input = user::ActiveModel {
-            id: ActiveValue::NotSet,
             username: ActiveValue::Set(username),
             name: ActiveValue::Set(name),
             access_token: ActiveValue::NotSet,

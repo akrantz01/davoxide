@@ -15,7 +15,6 @@ use sea_orm::DatabaseConnection;
 
 #[derive(Clone, Debug)]
 pub struct UserInfo {
-    pub id: i32,
     pub username: String,
     pub display_name: String,
 }
@@ -23,7 +22,6 @@ pub struct UserInfo {
 impl From<User> for UserInfo {
     fn from(user: User) -> Self {
         UserInfo {
-            id: user.id,
             username: user.username,
             display_name: user.name,
         }

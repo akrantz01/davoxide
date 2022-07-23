@@ -13,17 +13,10 @@ impl MigrationTrait for Migration {
                     .table(User::Table)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(User::Id)
-                            .integer()
-                            .not_null()
-                            .auto_increment()
-                            .primary_key(),
-                    )
-                    .col(
                         ColumnDef::new(User::Username)
                             .string()
                             .not_null()
-                            .unique_key(),
+                            .primary_key(),
                     )
                     .col(ColumnDef::new(User::Name).string().not_null())
                     .col(
@@ -38,7 +31,6 @@ impl MigrationTrait for Migration {
         manager
             .create_index(
                 Index::create()
-                    .name("idx-user-username")
                     .table(User::Table)
                     .col(User::Username)
                     .to_owned(),
@@ -49,14 +41,6 @@ impl MigrationTrait for Migration {
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        manager
-            .drop_index(
-                Index::drop()
-                    .name("idx-user-username")
-                    .table(User::Table)
-                    .to_owned(),
-            )
-            .await?;
         manager
             .drop_table(Table::drop().table(User::Table).to_owned())
             .await?;
