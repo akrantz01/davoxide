@@ -2,7 +2,7 @@ use axum::{
     body::Body,
     http::{Request, Response},
     middleware,
-    routing::any,
+    routing::{any, post},
     Extension, Router, Server,
 };
 use dav_server::{body::Body as DavBody, localfs::LocalFs, memls::MemLs, DavHandler};
@@ -14,6 +14,7 @@ use tracing::{info, warn};
 mod authentication;
 mod database;
 mod error;
+mod graphql;
 mod logging;
 
 #[tokio::main]
@@ -38,7 +39,9 @@ async fn main() -> eyre::Result<()> {
     // Configure routes
     let app = Router::new()
         .route("/dav/*path", any(webdav_handler))
+        .route("/graphql", post(graphql::handler))
         .layer(Extension(webdav))
+        .layer(Extension(graphql::schema(db.clone())))
         .layer(middleware::from_fn(authentication::middleware))
         .layer(Extension(db))
         .layer(logging::layer());

@@ -3,9 +3,7 @@ use argon2::{
     password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
     Argon2,
 };
-use sea_orm::{
-    prelude::*, sea_query::OnConflict, ActiveValue, DatabaseConnection, DbErr, IntoActiveModel,
-};
+use sea_orm::{prelude::*, sea_query::OnConflict, ActiveValue, DatabaseConnection, DbErr};
 use uuid::Uuid;
 
 pub struct UserManager;
@@ -25,8 +23,8 @@ impl UserManager {
     /// Re-generate a user's access token
     pub async fn regenerate_access_token(
         db: &DatabaseConnection,
-        user: user::Model,
-    ) -> Result<(String, user::Model), DbErr> {
+        user: &user::Model,
+    ) -> Result<String, DbErr> {
         let token = Uuid::new_v4().to_string();
 
         // Hash the password
@@ -38,22 +36,23 @@ impl UserManager {
             .to_string();
 
         // Update the user
-        let mut user = user.into_active_model();
+        let mut user = user.as_active_model();
         user.access_token = ActiveValue::Set(Some(hash));
-        let updated = user.update(db).await?;
+        user.update(db).await?;
 
-        Ok((token, updated))
+        Ok(token)
     }
 
     /// Remove a user's access token
     pub async fn remove_access_token(
         db: &DatabaseConnection,
-        user: user::Model,
-    ) -> Result<user::Model, DbErr> {
-        let mut user = user.into_active_model();
+        user: &user::Model,
+    ) -> Result<(), DbErr> {
+        let mut user = user.as_active_model();
         user.access_token = ActiveValue::Set(None);
 
-        user.update(db).await
+        user.update(db).await?;
+        Ok(())
     }
 
     /// Check that a user's access token is valid

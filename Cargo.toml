@@ -12,6 +12,8 @@ members = ["migration"]
 
 [dependencies]
 argon2 = "0.4.1"
+async-graphql = { version = "4.0.5", default-features = false, features = ["tracing"] }
+async-graphql-axum = "4.0.5"
 axum = { version = "0.5.13", default-features = false, features = ["headers", "http1", "http2"] }
 color-eyre = { version = "0.6.2", default-features = false, features = ["track-caller"] }
 dav-server = { version = "0.3.4", default-features = false, features = ["localfs"] }
