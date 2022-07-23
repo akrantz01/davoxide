@@ -1,5 +1,12 @@
 use super::entities::{prelude::*, user};
-use sea_orm::{prelude::*, sea_query::OnConflict, ActiveValue, DatabaseConnection, DbErr};
+use argon2::{
+    password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
+    Argon2,
+};
+use sea_orm::{
+    prelude::*, sea_query::OnConflict, ActiveValue, DatabaseConnection, DbErr, IntoActiveModel,
+};
+use uuid::Uuid;
 
 pub struct UserManager;
 
@@ -23,6 +30,40 @@ impl UserManager {
             .await
     }
 
+    /// Re-generate a user's access token
+    pub async fn regenerate_access_token(
+        db: &DatabaseConnection,
+        user: user::Model,
+    ) -> Result<(String, user::Model), DbErr> {
+        let token = Uuid::new_v4().to_string();
+
+        // Hash the password
+        let argon2 = Argon2::default();
+        let salt = SaltString::generate(&mut OsRng);
+        let hash = argon2
+            .hash_password(token.as_bytes(), &salt)
+            .unwrap()
+            .to_string();
+
+        // Update the user
+        let mut user = user.into_active_model();
+        user.access_token = ActiveValue::Set(Some(hash));
+        let updated = user.update(db).await?;
+
+        Ok((token, updated))
+    }
+
+    /// Remove a user's access token
+    pub async fn remove_access_token(
+        db: &DatabaseConnection,
+        user: user::Model,
+    ) -> Result<user::Model, DbErr> {
+        let mut user = user.into_active_model();
+        user.access_token = ActiveValue::Set(None);
+
+        user.update(db).await
+    }
+
     /// Check that a user's access token is valid
     pub async fn verify_access_token(
         db: &DatabaseConnection,
@@ -34,11 +75,16 @@ impl UserManager {
             None => return Ok(None),
         };
 
-        // TODO: use hashes instead of plaintext
-        if matches!(&user.access_token, Some(hash) if hash == token) {
-            Ok(Some(user))
-        } else {
-            Ok(None)
+        // Get the access token
+        let hash = match &user.access_token {
+            Some(hash) => PasswordHash::new(hash).unwrap(),
+            None => return Ok(None),
+        };
+
+        let argon = Argon2::default();
+        match argon.verify_password(token.as_bytes(), &hash) {
+            Ok(_) => Ok(Some(user)),
+            Err(_) => Ok(None),
         }
     }
 
