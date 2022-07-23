@@ -37,10 +37,7 @@ impl UserInfo {
         let db = req.extensions().get::<DatabaseConnection>().unwrap();
 
         // Try proxy auth first
-        if headers.contains_key("remote-user")
-            && headers.contains_key("remote-name")
-            && headers.contains_key("remote-groups")
-        {
+        if headers.contains_key("remote-user") && headers.contains_key("remote-name") {
             let username = string_from_header(req.headers(), "remote-user")?;
             let display_name = string_from_header(req.headers(), "remote-name")?;
 
