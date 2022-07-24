@@ -89,6 +89,7 @@ impl UserManager {
             username: ActiveValue::Set(username),
             name: ActiveValue::Set(name),
             access_token: ActiveValue::NotSet,
+            default_access: ActiveValue::NotSet,
         };
 
         User::insert(input)

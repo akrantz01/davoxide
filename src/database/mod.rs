@@ -6,7 +6,7 @@ use tracing::{info, instrument, log::LevelFilter};
 mod entities;
 mod user_manager;
 
-pub use entities::user::Model as User;
+pub use entities::{permission::Model as Permission, user::Model as User, Action};
 pub use user_manager::UserManager;
 
 /// Connect to the database and run any pending migrations

@@ -6,7 +6,10 @@ use axum::{
     response::{IntoResponse, Response},
 };
 use sea_orm::DbErr;
-use std::error::Error as StdError;
+use std::{
+    error::Error as StdError,
+    fmt::{self, Display, Formatter},
+};
 use tracing::error;
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -21,7 +24,7 @@ pub enum Error {
     NotFound,
     /// Used when an unexpected and unhandleable error occurs
     /// i.e. database or file system errors
-    Unexpected(Box<dyn StdError>),
+    Unexpected(Box<dyn StdError + Send + Sync>),
 }
 
 impl Error {
@@ -36,6 +39,20 @@ impl From<DbErr> for Error {
         match e {
             DbErr::RecordNotFound(_) => Error::NotFound,
             source => Error::Unexpected(Box::new(source)),
+        }
+    }
+}
+
+impl Display for Error {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Unauthorized => write!(f, "unauthorized"),
+            Self::InvalidPermissions => write!(f, "permission denied"),
+            Self::NotFound => write!(f, "not found"),
+            Self::Unexpected(e) => {
+                error!(error = %e, source = ?e.source(), "an unexpected error occurred");
+                write!(f, "an unexpected error occurred")
+            }
         }
     }
 }

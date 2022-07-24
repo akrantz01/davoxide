@@ -1,4 +1,4 @@
-use super::tables::*;
+use crate::tables::*;
 use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
