@@ -4,9 +4,11 @@ use sea_orm::{ConnectOptions, Database, DatabaseConnection};
 use tracing::{info, instrument, log::LevelFilter};
 
 mod entities;
+mod permission_manager;
 mod user_manager;
 
 pub use entities::{permission::Model as Permission, user::Model as User, Action};
+pub use permission_manager::PermissionManager;
 pub use user_manager::UserManager;
 
 /// Connect to the database and run any pending migrations
