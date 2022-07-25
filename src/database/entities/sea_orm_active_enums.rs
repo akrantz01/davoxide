@@ -3,15 +3,15 @@
 use async_graphql::Enum;
 use sea_orm::entity::prelude::*;
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq, EnumIter, DeriveActiveEnum, Enum)]
+#[derive(Debug, Clone, Copy, Eq, Ord, PartialEq, PartialOrd, EnumIter, DeriveActiveEnum, Enum)]
 #[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "action")]
 pub enum Action {
-    #[sea_orm(string_value = "admin")]
-    Admin,
     #[sea_orm(string_value = "deny")]
     Deny,
-    #[sea_orm(string_value = "modify")]
-    Modify,
     #[sea_orm(string_value = "read")]
     Read,
+    #[sea_orm(string_value = "modify")]
+    Modify,
+    #[sea_orm(string_value = "admin")]
+    Admin,
 }

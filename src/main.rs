@@ -1,11 +1,8 @@
 use axum::{
-    body::Body,
-    http::{Request, Response},
     middleware,
     routing::{any, post},
     Extension, Router, Server,
 };
-use dav_server::{body::Body as DavBody, localfs::LocalFs, memls::MemLs, DavHandler};
 use eyre::WrapErr;
 use std::env;
 use tokio::signal;
@@ -16,6 +13,7 @@ mod database;
 mod error;
 mod graphql;
 mod logging;
+mod webdav;
 
 #[tokio::main]
 async fn main() -> eyre::Result<()> {
@@ -30,17 +28,11 @@ async fn main() -> eyre::Result<()> {
         database::connect(url).await?
     };
 
-    let webdav = DavHandler::builder()
-        .strip_prefix("/dav")
-        .filesystem(LocalFs::new("./files", false, false, false))
-        .locksystem(MemLs::new())
-        .build_handler();
-
     // Configure routes
     let app = Router::new()
-        .route("/dav/*path", any(webdav_handler))
+        .route("/dav/*path", any(webdav::handler))
         .route("/graphql", post(graphql::handler))
-        .layer(Extension(webdav))
+        .layer(Extension(webdav::filesystem()))
         .layer(Extension(graphql::schema(db.clone())))
         .layer(middleware::from_fn(authentication::middleware))
         .layer(Extension(db))
@@ -83,11 +75,4 @@ async fn main() -> eyre::Result<()> {
         .wrap_err("failed to start server")?;
 
     Ok(())
-}
-
-async fn webdav_handler(
-    Extension(webdav): Extension<DavHandler>,
-    req: Request<Body>,
-) -> Response<DavBody> {
-    webdav.handle(req).await
 }
