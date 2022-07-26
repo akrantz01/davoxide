@@ -2,7 +2,7 @@ use crate::{
     database::{Action, Permission, PermissionManager, User, UserManager},
     error::Error,
 };
-use async_graphql::{Context, Object, Result};
+use async_graphql::{Context, Error as GraphQLError, Object, Result};
 use sea_orm::DatabaseConnection;
 use std::path::Path;
 
@@ -23,6 +23,41 @@ impl Mutation {
         let db = ctx.data::<DatabaseConnection>()?;
 
         UserManager::remove_access_token(db, user).await?;
+        Ok(true)
+    }
+
+    async fn update_default_permission(
+        &self,
+        ctx: &Context<'_>,
+        user: String,
+        action: Action,
+    ) -> Result<User> {
+        let current_user = ctx.data::<User>()?;
+        if !current_user.is_admin() {
+            return Err(Error::InvalidPermissions.into());
+        }
+
+        let db = ctx.data::<DatabaseConnection>()?;
+
+        // Update the user
+        let user = UserManager::find_by_username(db, &user)
+            .await?
+            .ok_or(Error::NotFound)?;
+
+        Ok(UserManager::change_default_action(db, &user, action).await?)
+    }
+
+    async fn delete_user(&self, ctx: &Context<'_>, user: String) -> Result<bool> {
+        let current_user = ctx.data::<User>()?;
+        if !current_user.is_admin() {
+            return Err(Error::InvalidPermissions.into());
+        } else if current_user.username == user {
+            return Err(GraphQLError::new("cannot delete yourself"));
+        }
+
+        let db = ctx.data::<DatabaseConnection>()?;
+        UserManager::delete(db, user).await?;
+
         Ok(true)
     }
 

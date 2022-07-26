@@ -1,4 +1,7 @@
-use super::entities::{prelude::*, user};
+use super::{
+    entities::{prelude::*, user},
+    Action,
+};
 use argon2::{
     password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
     Argon2,
@@ -100,5 +103,28 @@ impl UserManager {
             )
             .exec_with_returning(db)
             .await
+    }
+
+    /// Get a list of all the users
+    pub async fn list(db: &DatabaseConnection) -> Result<Vec<user::Model>, DbErr> {
+        User::find().all(db).await
+    }
+
+    /// Change the default action for the given user
+    pub async fn change_default_action(
+        db: &DatabaseConnection,
+        user: &user::Model,
+        action: Action,
+    ) -> Result<user::Model, DbErr> {
+        let mut user = user.as_active_model();
+        user.default_access = ActiveValue::Set(action);
+
+        user.update(db).await
+    }
+
+    /// Delete a user
+    pub async fn delete(db: &DatabaseConnection, user: String) -> Result<(), DbErr> {
+        User::delete_by_id(user).exec(db).await?;
+        Ok(())
     }
 }
