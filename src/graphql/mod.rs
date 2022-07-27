@@ -2,7 +2,7 @@ use crate::database::User;
 use async_graphql::{EmptySubscription, Schema as BaseSchema};
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::Extension;
-use sea_orm::DatabaseConnection;
+use sqlx::PgPool;
 
 mod mutation;
 mod query;
@@ -10,7 +10,7 @@ mod query;
 type Schema = BaseSchema<query::Query, mutation::Mutation, EmptySubscription>;
 
 /// Build the schema for the GraphQL handler
-pub fn schema(db: DatabaseConnection) -> Schema {
+pub fn schema(db: PgPool) -> Schema {
     Schema::build(query::Query, mutation::Mutation, EmptySubscription)
         .data(db)
         .finish()

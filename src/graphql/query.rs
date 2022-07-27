@@ -1,9 +1,6 @@
-use crate::{
-    database::{User, UserManager},
-    error::Error,
-};
+use crate::{database::User, error::Error};
 use async_graphql::{Context, Object, Result};
-use sea_orm::DatabaseConnection;
+use sqlx::PgPool;
 
 pub struct Query;
 
@@ -19,7 +16,9 @@ impl Query {
             return Err(Error::InvalidPermissions.into());
         }
 
-        let db = ctx.data::<DatabaseConnection>()?;
-        Ok(UserManager::list(db).await?)
+        let db = ctx.data::<PgPool>()?;
+        let users = User::list(db).await?;
+
+        Ok(users)
     }
 }

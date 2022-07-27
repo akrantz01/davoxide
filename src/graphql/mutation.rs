@@ -1,9 +1,9 @@
 use crate::{
-    database::{Action, Permission, PermissionManager, User, UserManager},
+    database::{Action, Permission, User},
     error::Error,
 };
 use async_graphql::{Context, Error as GraphQLError, Object, Result};
-use sea_orm::DatabaseConnection;
+use sqlx::PgPool;
 use std::path::Path;
 
 pub struct Mutation;
@@ -12,17 +12,18 @@ pub struct Mutation;
 impl Mutation {
     async fn regenerate_access_token(&self, ctx: &Context<'_>) -> Result<String> {
         let user = ctx.data::<User>()?;
-        let db = ctx.data::<DatabaseConnection>()?;
+        let db = ctx.data::<PgPool>()?;
 
-        let token = UserManager::regenerate_access_token(db, user).await?;
+        let token = user.regenerate_access_token(db).await?;
         Ok(token)
     }
 
     async fn revoke_access_token(&self, ctx: &Context<'_>) -> Result<bool> {
         let user = ctx.data::<User>()?;
-        let db = ctx.data::<DatabaseConnection>()?;
+        let db = ctx.data::<PgPool>()?;
 
-        UserManager::remove_access_token(db, user).await?;
+        user.revoke_access_token(db).await?;
+
         Ok(true)
     }
 
@@ -37,14 +38,13 @@ impl Mutation {
             return Err(Error::InvalidPermissions.into());
         }
 
-        let db = ctx.data::<DatabaseConnection>()?;
+        let db = ctx.data::<PgPool>()?;
 
         // Update the user
-        let user = UserManager::find_by_username(db, &user)
-            .await?
-            .ok_or(Error::NotFound)?;
+        let mut user = User::get(db, &user).await?.ok_or(Error::NotFound)?;
+        user.set_default_action(db, action).await?;
 
-        Ok(UserManager::change_default_action(db, &user, action).await?)
+        Ok(user)
     }
 
     async fn delete_user(&self, ctx: &Context<'_>, user: String) -> Result<bool> {
@@ -55,8 +55,8 @@ impl Mutation {
             return Err(GraphQLError::new("cannot delete yourself"));
         }
 
-        let db = ctx.data::<DatabaseConnection>()?;
-        UserManager::delete(db, user).await?;
+        let db = ctx.data::<PgPool>()?;
+        User::delete(db, &user).await?;
 
         Ok(true)
     }
@@ -69,17 +69,12 @@ impl Mutation {
         action: Action,
         affects_children: bool,
     ) -> Result<Permission> {
+        let db = ctx.data::<PgPool>()?;
+
         let current_user = ctx.data::<User>()?;
         if !current_user.is_admin() {
             return Err(Error::InvalidPermissions.into());
         }
-
-        let db = ctx.data::<DatabaseConnection>()?;
-
-        // Ensure the user exists
-        let user = UserManager::find_by_username(db, &user)
-            .await?
-            .ok_or(Error::NotFound)?;
 
         // Remove any trailing slashes
         let path = Path::new(&path)
@@ -89,9 +84,11 @@ impl Mutation {
             .to_string();
 
         // Assign the permission
-        let created =
-            PermissionManager::assign_to_user(db, &user, path, action, affects_children).await?;
-        Ok(created)
+        let user = User::get(db, &user).await?.ok_or(Error::NotFound)?;
+        let permission = user
+            .assign_permission(db, &path, action, affects_children)
+            .await?;
+        Ok(permission)
     }
 
     async fn remove_permission(&self, ctx: &Context<'_>, permission_id: i32) -> Result<bool> {
@@ -100,8 +97,8 @@ impl Mutation {
             return Err(Error::InvalidPermissions.into());
         }
 
-        let db = ctx.data::<DatabaseConnection>()?;
-        PermissionManager::remove_permission(db, permission_id).await?;
+        let db = ctx.data::<PgPool>()?;
+        Permission::delete(db, permission_id).await?;
 
         Ok(true)
     }

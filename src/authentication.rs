@@ -1,5 +1,5 @@
 use super::{
-    database::{User, UserManager},
+    database::User,
     error::{Error, Result},
 };
 use axum::{
@@ -11,7 +11,7 @@ use axum::{
     middleware::Next,
     response::Response,
 };
-use sea_orm::DatabaseConnection;
+use sqlx::PgPool;
 
 /// Check that the user is authenticated for every request
 pub async fn middleware<B>(mut req: Request<B>, next: Next<B>) -> Result<Response> {
@@ -27,14 +27,14 @@ pub async fn middleware<B>(mut req: Request<B>, next: Next<B>) -> Result<Respons
 /// 2. Basic authentication
 async fn load_user<B>(req: &Request<B>) -> Result<User> {
     let headers = req.headers();
-    let db = req.extensions().get::<DatabaseConnection>().unwrap();
+    let db = req.extensions().get::<PgPool>().unwrap();
 
     // Try proxy auth first
     if headers.contains_key("remote-user") && headers.contains_key("remote-name") {
         let username = string_from_header(req.headers(), "remote-user")?;
         let display_name = string_from_header(req.headers(), "remote-name")?;
 
-        let user = UserManager::create_if_not_exists(db, username, display_name).await?;
+        let user = User::create_if_not_exists(db, &username, &display_name).await?;
         Ok(user)
 
         // Fallback to basic auth
@@ -43,9 +43,15 @@ async fn load_user<B>(req: &Request<B>) -> Result<User> {
             .typed_get::<Authorization<Basic>>()
             .ok_or(Error::Unauthorized)?;
 
-        UserManager::verify_access_token(db, credentials.username(), credentials.password())
+        let user = User::get(db, &credentials.username())
             .await?
-            .ok_or(Error::Unauthorized)
+            .ok_or(Error::Unauthorized)?;
+
+        if user.access_token_valid(&credentials.password()) {
+            Ok(user)
+        } else {
+            Err(Error::Unauthorized)
+        }
 
         // No credentials found
     } else {

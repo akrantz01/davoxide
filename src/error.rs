@@ -6,7 +6,7 @@ use axum::{
     },
     response::{IntoResponse, Response},
 };
-use sea_orm::DbErr;
+use sqlx::Error as SqlxError;
 use std::{
     error::Error as StdError,
     fmt::{self, Display, Formatter},
@@ -30,17 +30,10 @@ pub enum Error {
     Unexpected(Box<dyn StdError + Send + Sync>),
 }
 
-impl Error {
-    /// Check if the error resulted from not being able to find a record
-    pub fn is_not_found(&self) -> bool {
-        matches!(self, Error::NotFound)
-    }
-}
-
-impl From<DbErr> for Error {
-    fn from(e: DbErr) -> Self {
+impl From<SqlxError> for Error {
+    fn from(e: SqlxError) -> Self {
         match e {
-            DbErr::RecordNotFound(_) => Error::NotFound,
+            SqlxError::RowNotFound => Error::NotFound,
             source => Error::Unexpected(Box::new(source)),
         }
     }

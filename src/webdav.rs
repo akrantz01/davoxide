@@ -4,7 +4,7 @@ use crate::{
 };
 use axum::{body::Body, http::Request, response::Response, Extension};
 use dav_server::{body::Body as DavBody, localfs::LocalFs, memls::MemLs, DavHandler, DavMethod};
-use sea_orm::DatabaseConnection;
+use sqlx::PgPool;
 use std::path::Path;
 
 /// Build the file system interface the server should use
@@ -20,7 +20,7 @@ pub fn filesystem() -> DavHandler {
 pub async fn handler(
     Extension(webdav): Extension<DavHandler>,
     Extension(user): Extension<User>,
-    Extension(db): Extension<DatabaseConnection>,
+    Extension(db): Extension<PgPool>,
     req: Request<Body>,
 ) -> Result<Response<DavBody>> {
     // Check the user's permissions if they are not an admin

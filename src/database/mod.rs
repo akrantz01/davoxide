@@ -1,32 +1,37 @@
 use eyre::WrapErr;
-use migrations::{Migrator, MigratorTrait};
-use sea_orm::{ConnectOptions, Database, DatabaseConnection};
+use sqlx::{
+    postgres::{PgConnectOptions, PgPool},
+    ConnectOptions,
+};
+use std::str::FromStr;
 use tracing::{info, instrument, log::LevelFilter};
 
-mod entities;
-mod permission_manager;
-mod user_manager;
+mod permission;
+mod types;
+mod user;
 
-pub use entities::{permission::Model as Permission, user::Model as User, Action};
-pub use permission_manager::PermissionManager;
-pub use user_manager::UserManager;
+pub use permission::Permission;
+pub use types::Action;
+pub use user::User;
 
 /// Connect to the database and run any pending migrations
 #[instrument(skip_all)]
-pub async fn connect(url: String) -> eyre::Result<DatabaseConnection> {
-    let options = ConnectOptions::new(url)
-        .sqlx_logging(true)
-        .sqlx_logging_level(LevelFilter::Debug)
+pub async fn connect(url: String) -> eyre::Result<PgPool> {
+    let options = PgConnectOptions::from_str(&url)
+        .wrap_err("invalid database url format")?
+        .log_statements(LevelFilter::Debug)
         .to_owned();
-    let database = Database::connect(options)
+
+    let db = PgPool::connect_with(options)
         .await
         .wrap_err("failed to connect to the database")?;
     info!("database connected");
 
-    Migrator::up(&database, None)
+    sqlx::migrate!()
+        .run(&db)
         .await
         .wrap_err("failed to run database migrations")?;
     info!("database schema up-to-date");
 
-    Ok(database)
+    Ok(db)
 }
