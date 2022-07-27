@@ -21,4 +21,16 @@ impl Query {
 
         Ok(users)
     }
+
+    async fn user(&self, ctx: &Context<'_>, username: String) -> Result<User> {
+        let current_user = ctx.data::<User>()?;
+        if !current_user.is_admin() {
+            return Err(Error::InvalidPermissions.into());
+        }
+
+        let db = ctx.data::<PgPool>()?;
+        let user = User::get(db, &username).await?.ok_or(Error::NotFound)?;
+
+        Ok(user)
+    }
 }
