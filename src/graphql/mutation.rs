@@ -1,3 +1,4 @@
+use super::outputs::*;
 use crate::{
     database::{Action, Permission, User},
     error::Error,
@@ -10,21 +11,24 @@ pub struct Mutation;
 
 #[Object]
 impl Mutation {
-    async fn regenerate_access_token(&self, ctx: &Context<'_>) -> Result<String> {
+    async fn regenerate_access_token(
+        &self,
+        ctx: &Context<'_>,
+    ) -> Result<RegenerateAccessTokenResult> {
         let user = ctx.data::<User>()?;
         let db = ctx.data::<PgPool>()?;
 
         let token = user.regenerate_access_token(db).await?;
-        Ok(token)
+        Ok(RegenerateAccessTokenResult { token })
     }
 
-    async fn revoke_access_token(&self, ctx: &Context<'_>) -> Result<bool> {
+    async fn revoke_access_token(&self, ctx: &Context<'_>) -> Result<User> {
         let user = ctx.data::<User>()?;
         let db = ctx.data::<PgPool>()?;
 
         user.revoke_access_token(db).await?;
 
-        Ok(true)
+        Ok(user.clone())
     }
 
     async fn update_default_permission(
@@ -47,7 +51,7 @@ impl Mutation {
         Ok(user)
     }
 
-    async fn delete_user(&self, ctx: &Context<'_>, user: String) -> Result<bool> {
+    async fn delete_user(&self, ctx: &Context<'_>, user: String) -> Result<DeleteResult<String>> {
         let current_user = ctx.data::<User>()?;
         if !current_user.is_admin() {
             return Err(Error::InvalidPermissions.into());
@@ -58,7 +62,7 @@ impl Mutation {
         let db = ctx.data::<PgPool>()?;
         User::delete(db, &user).await?;
 
-        Ok(true)
+        Ok(DeleteResult { last_removed: user })
     }
 
     async fn assign_permission_to_user(
@@ -91,7 +95,11 @@ impl Mutation {
         Ok(permission)
     }
 
-    async fn remove_permission(&self, ctx: &Context<'_>, permission_id: i32) -> Result<bool> {
+    async fn remove_permission(
+        &self,
+        ctx: &Context<'_>,
+        permission_id: i32,
+    ) -> Result<DeleteResult<i32>> {
         let current_user = ctx.data::<User>()?;
         if !current_user.is_admin() {
             return Err(Error::InvalidPermissions.into());
@@ -100,6 +108,8 @@ impl Mutation {
         let db = ctx.data::<PgPool>()?;
         Permission::delete(db, permission_id).await?;
 
-        Ok(true)
+        Ok(DeleteResult {
+            last_removed: permission_id,
+        })
     }
 }

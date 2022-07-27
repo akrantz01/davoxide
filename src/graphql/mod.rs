@@ -5,6 +5,7 @@ use axum::Extension;
 use sqlx::PgPool;
 
 mod mutation;
+mod outputs;
 mod query;
 
 type Schema = BaseSchema<query::Query, mutation::Mutation, EmptySubscription>;
