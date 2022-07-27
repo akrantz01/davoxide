@@ -13,7 +13,7 @@ async-graphql = { version = "4.0.5", default-features = false, features = ["trac
 async-graphql-axum = "4.0.5"
 axum = { version = "0.5.13", default-features = false, features = ["headers", "http1", "http2"] }
 color-eyre = { version = "0.6.2", default-features = false, features = ["track-caller"] }
-dav-server = { version = "0.3.4", default-features = false, features = ["localfs"] }
+dav-server = { version = "0.4.0", default-features = false, features = ["localfs"] }
 dotenv = "0.15.0"
 eyre = "0.6.8"
 rand_core = { version = "0.6.3", features = ["std"] }
