@@ -6,7 +6,7 @@ use crate::{
     config::Config,
     database::{Action, User},
     error::Error,
-    permissions::{check_permissions, sanitize_path},
+    security::{check_permissions, sanitize_path},
 };
 use async_graphql::{Context, Object, Result};
 use sqlx::PgPool;

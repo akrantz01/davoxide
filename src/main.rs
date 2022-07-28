@@ -7,13 +7,12 @@ use eyre::WrapErr;
 use tokio::signal;
 use tracing::{info, warn};
 
-mod authentication;
 mod config;
 mod database;
 mod error;
 mod graphql;
 mod logging;
-mod permissions;
+mod security;
 mod webdav;
 
 #[tokio::main]
@@ -34,7 +33,7 @@ async fn main() -> eyre::Result<()> {
         .route("/graphql", post(graphql::handler))
         .layer(Extension(webdav::filesystem(&config.path)))
         .layer(Extension(graphql::schema(config.clone(), db.clone())))
-        .layer(middleware::from_fn(authentication::middleware))
+        .layer(middleware::from_fn(security::middleware))
         .layer(Extension(db))
         .layer(logging::layer());
 

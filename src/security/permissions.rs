@@ -3,29 +3,7 @@ use crate::{
     error::{Error, Result},
 };
 use sqlx::PgPool;
-use std::path::{Component, Path, PathBuf};
-
-/// Sanitize a path, ensuring it does not escape the base directory
-pub fn sanitize_path(raw: PathBuf) -> Result<PathBuf> {
-    let mut sanitized = Vec::new();
-
-    for component in raw.components() {
-        match component {
-            Component::Prefix(_) | Component::RootDir | Component::CurDir => continue,
-            Component::ParentDir => {
-                if sanitized.len() == 0 {
-                    return Err(Error::InvalidPermissions);
-                } else {
-                    sanitized.pop();
-                }
-            }
-            Component::Normal(segment) => sanitized.push(segment),
-        }
-    }
-
-    let path = PathBuf::from_iter(sanitized);
-    Ok(path)
-}
+use std::path::Path;
 
 /// Check the user's permissions are sufficient for the requested action and path
 pub async fn check_permissions(

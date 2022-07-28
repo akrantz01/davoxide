@@ -1,7 +1,7 @@
 use crate::{
     database::{Action, User},
     error::Result,
-    permissions::{check_permissions, sanitize_path},
+    security::{check_permissions, sanitize_path},
 };
 use axum::{body::Body, http::Request, response::Response, Extension};
 use dav_server::{body::Body as DavBody, localfs::LocalFs, memls::MemLs, DavHandler, DavMethod};
@@ -33,7 +33,6 @@ pub async fn handler(
         .decode_utf8_lossy()
         .into_owned();
     let path = sanitize_path(decoded_path.into())?;
-    dbg!(&path);
 
     // Check the user's permissions
     let required = required_permission(req.method().try_into()?);
