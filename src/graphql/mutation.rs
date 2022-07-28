@@ -5,7 +5,7 @@ use crate::{
 };
 use async_graphql::{Context, Error as GraphQLError, Object, Result};
 use sqlx::PgPool;
-use std::path::Path;
+use std::path::{Component, Path, PathBuf};
 
 pub struct Mutation;
 
@@ -80,10 +80,11 @@ impl Mutation {
             return Err(Error::InvalidPermissions.into());
         }
 
-        // Remove any trailing slashes
+        // Remove any leading and trailing slashes
         let path = Path::new(&path)
             .components()
-            .as_path()
+            .filter(|&c| c != Component::RootDir)
+            .collect::<PathBuf>()
             .display()
             .to_string();
 

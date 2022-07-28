@@ -13,6 +13,7 @@ mod database;
 mod error;
 mod graphql;
 mod logging;
+mod permissions;
 mod webdav;
 
 #[tokio::main]

@@ -2,7 +2,12 @@ use super::{
     fs::{self, Entry},
     outputs::DownloadUrlResult,
 };
-use crate::{config::Config, database::User, error::Error};
+use crate::{
+    config::Config,
+    database::{Action, User},
+    error::Error,
+    permissions::{check_permissions, sanitize_path},
+};
 use async_graphql::{Context, Object, Result};
 use sqlx::PgPool;
 use std::{path::PathBuf, sync::Arc};
@@ -41,28 +46,39 @@ impl Query {
 
     async fn list_directory(&self, ctx: &Context<'_>, path: Option<String>) -> Result<Vec<Entry>> {
         let config = ctx.data::<Arc<Config>>()?;
+        let db = ctx.data::<PgPool>()?;
+        let user = ctx.data::<User>()?;
 
-        // Build the full path
         let sub_path = path.map(PathBuf::from).unwrap_or_else(PathBuf::new);
-        let path = fs::build_path(sub_path, &config.path)?;
+        let sanitized = sanitize_path(sub_path)?;
+
+        // Check if the user has the necessary permissions
+        check_permissions(db, user, &sanitized, Action::Read).await?;
 
         // Get the contents
+        let path = config.path.join(sanitized);
         let entries = fs::list(path).await?;
+
         Ok(entries)
     }
 
     async fn download_url(&self, ctx: &Context<'_>, path: String) -> Result<DownloadUrlResult> {
         let config = ctx.data::<Arc<Config>>()?;
+        let db = ctx.data::<PgPool>()?;
+        let user = ctx.data::<User>()?;
+
+        // Check if the user has the necessary permissions
+        let sanitized = sanitize_path(path.into())?;
+        check_permissions(db, user, &sanitized, Action::Read).await?;
 
         // Only allow downloading files
-        let path = fs::build_path(path.into(), &config.path)?;
+        let path = config.path.join(&sanitized);
         if !path.is_file() {
             return Err(Error::NotAFile.into());
         }
 
-        let download_path = path.strip_prefix(&config.path).unwrap();
         Ok(DownloadUrlResult {
-            url: format!("/dav/{}", download_path.display()),
+            url: format!("/dav/{}", sanitized.display()),
         })
     }
 }

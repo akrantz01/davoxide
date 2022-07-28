@@ -482,6 +482,7 @@ dependencies = [
  "dav-server",
  "dotenv",
  "eyre",
+ "percent-encoding",
  "rand_core",
  "sqlx",
  "time",
