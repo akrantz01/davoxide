@@ -16,8 +16,8 @@ pub use user::User;
 
 /// Connect to the database and run any pending migrations
 #[instrument(skip_all)]
-pub async fn connect(url: String) -> eyre::Result<PgPool> {
-    let options = PgConnectOptions::from_str(&url)
+pub async fn connect(url: &str) -> eyre::Result<PgPool> {
+    let options = PgConnectOptions::from_str(url)
         .wrap_err("invalid database url format")?
         .log_statements(LevelFilter::Debug)
         .to_owned();

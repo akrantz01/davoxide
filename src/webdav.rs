@@ -8,11 +8,14 @@ use sqlx::PgPool;
 use std::path::Path;
 
 /// Build the file system interface the server should use
-pub fn filesystem() -> DavHandler {
+pub fn filesystem(base: &Path) -> DavHandler {
+    let fs = LocalFs::new(base, false, false, false);
+    let ls = MemLs::new();
+
     DavHandler::builder()
         .strip_prefix("/dav")
-        .filesystem(LocalFs::new("./files", false, false, false))
-        .locksystem(MemLs::new())
+        .filesystem(fs)
+        .locksystem(ls)
         .build_handler()
 }
 

@@ -4,11 +4,11 @@ use axum::{
     Extension, Router, Server,
 };
 use eyre::WrapErr;
-use std::env;
 use tokio::signal;
 use tracing::{info, warn};
 
 mod authentication;
+mod config;
 mod database;
 mod error;
 mod graphql;
@@ -23,16 +23,15 @@ async fn main() -> eyre::Result<()> {
     }
     tracing_subscriber::fmt::init();
 
-    let db = {
-        let url = env::var("DATABASE_URL").wrap_err("missing DATABASE_URL in environment")?;
-        database::connect(url).await?
-    };
+    let config = config::load().wrap_err("failed to load config")?;
+
+    let db = database::connect(&config.database_url).await?;
 
     // Configure routes
     let app = Router::new()
         .route("/dav/*path", any(webdav::handler))
         .route("/graphql", post(graphql::handler))
-        .layer(Extension(webdav::filesystem()))
+        .layer(Extension(webdav::filesystem(&config.path)))
         .layer(Extension(graphql::schema(db.clone())))
         .layer(middleware::from_fn(authentication::middleware))
         .layer(Extension(db))
@@ -61,14 +60,9 @@ async fn main() -> eyre::Result<()> {
         info!("goodbye :)");
     };
 
-    let address = env::var("ADDRESS")
-        .unwrap_or_else(|_| String::from("127.0.0.1:3000"))
-        .parse()
-        .wrap_err("invalid address format")?;
-
     // Launch the server
-    info!(%address, "listening and ready to handle requests");
-    Server::bind(&address)
+    info!(address = %config.address, "listening and ready to handle requests");
+    Server::bind(&config.address)
         .serve(app.into_make_service())
         .with_graceful_shutdown(shutdown())
         .await
