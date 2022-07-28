@@ -32,7 +32,7 @@ async fn main() -> eyre::Result<()> {
         .route("/dav/*path", any(webdav::handler))
         .route("/graphql", post(graphql::handler))
         .layer(Extension(webdav::filesystem(&config.path)))
-        .layer(Extension(graphql::schema(db.clone())))
+        .layer(Extension(graphql::schema(config.clone(), db.clone())))
         .layer(middleware::from_fn(authentication::middleware))
         .layer(Extension(db))
         .layer(logging::layer());

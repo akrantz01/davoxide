@@ -9,7 +9,7 @@ edition = "2021"
 
 [dependencies]
 argon2 = "0.4.1"
-async-graphql = { version = "4.0.5", default-features = false, features = ["tracing"] }
+async-graphql = { version = "4.0.5", default-features = false, features = ["time", "tracing"] }
 async-graphql-axum = "4.0.5"
 axum = { version = "0.5.13", default-features = false, features = ["headers", "http1", "http2"] }
 color-eyre = { version = "0.6.2", default-features = false, features = ["track-caller"] }
@@ -18,7 +18,9 @@ dotenv = "0.15.0"
 eyre = "0.6.8"
 rand_core = { version = "0.6.3", features = ["std"] }
 sqlx = { version = "0.6.0", features = ["offline", "macros", "migrate", "runtime-tokio-rustls", "postgres"] }
-tokio = { version = "1.20.0", features = ["macros", "rt", "rt-multi-thread", "signal"] }
+time = "0.3.11"
+tokio = { version = "1.20.0", features = ["fs", "macros", "rt", "rt-multi-thread", "signal"] }
+tokio-stream = { version = "0.1.9", default-features = false, features = ["fs"] }
 tower-http = { version = "0.3.4", default-features = false, features = ["request-id", "trace"] }
 tracing = "0.1.35"
 tracing-subscriber = { version = "0.3.15", features = ["env-filter"] }

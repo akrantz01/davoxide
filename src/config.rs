@@ -1,5 +1,6 @@
 use eyre::WrapErr;
 use std::env::current_dir;
+use std::sync::Arc;
 use std::{env, net::SocketAddr, path::PathBuf};
 
 pub struct Config {
@@ -12,7 +13,7 @@ pub struct Config {
 }
 
 /// Parse the configuration from the database
-pub fn load() -> eyre::Result<Config> {
+pub fn load() -> eyre::Result<Arc<Config>> {
     if env::var("RUST_LOG").ok().is_none() {
         env::set_var("RUST_LOG", "info");
     }
@@ -26,11 +27,13 @@ pub fn load() -> eyre::Result<Config> {
     let current_dir = current_dir()?;
     let path = env::var("BASE_PATH")
         .map(PathBuf::from)
-        .unwrap_or(current_dir);
+        .unwrap_or(current_dir)
+        .canonicalize()?;
 
-    Ok(Config {
+    let config = Config {
         address,
         database_url,
         path,
-    })
+    };
+    Ok(Arc::new(config))
 }

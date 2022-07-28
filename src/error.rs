@@ -10,6 +10,7 @@ use sqlx::Error as SqlxError;
 use std::{
     error::Error as StdError,
     fmt::{self, Display, Formatter},
+    io::{self, ErrorKind},
 };
 use tracing::error;
 
@@ -25,6 +26,10 @@ pub enum Error {
     NotFound,
     /// For when the incoming request is invalid
     BadRequest,
+    /// For when the requested action is only valid on directories
+    NotADirectory,
+    /// For when the requested action is only valid on files
+    NotAFile,
     /// Used when an unexpected and unhandleable error occurs
     /// i.e. database or file system errors
     Unexpected(Box<dyn StdError + Send + Sync>),
@@ -45,6 +50,15 @@ impl From<InvalidMethod> for Error {
     }
 }
 
+impl From<io::Error> for Error {
+    fn from(e: io::Error) -> Self {
+        match e.kind() {
+            ErrorKind::NotFound => Error::NotFound,
+            _ => Error::Unexpected(e.into()),
+        }
+    }
+}
+
 impl Display for Error {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
@@ -52,6 +66,8 @@ impl Display for Error {
             Self::InvalidPermissions => write!(f, "permission denied"),
             Self::NotFound => write!(f, "not found"),
             Self::BadRequest => write!(f, "bad request"),
+            Self::NotADirectory => write!(f, "path is not a directory"),
+            Self::NotAFile => write!(f, "path is not a file"),
             Self::Unexpected(e) => {
                 error!(error = %e, source = ?e.source(), "an unexpected error occurred");
                 write!(f, "an unexpected error occurred")
@@ -74,6 +90,10 @@ impl IntoResponse for Error {
             Self::InvalidPermissions => static_response("permission denied", StatusCode::FORBIDDEN),
             Self::NotFound => static_response("not found", StatusCode::NOT_FOUND),
             Self::BadRequest => static_response("bad request", StatusCode::BAD_REQUEST),
+            Self::NotADirectory => {
+                static_response("path is not a directory", StatusCode::BAD_REQUEST)
+            }
+            Self::NotAFile => static_response("path is not a file", StatusCode::BAD_REQUEST),
             Self::Unexpected(e) => {
                 error!(error = %e, source = ?e.source(), "an unexpected error occurred");
                 static_response("internal server error", StatusCode::INTERNAL_SERVER_ERROR)
