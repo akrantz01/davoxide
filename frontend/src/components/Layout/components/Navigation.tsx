@@ -1,10 +1,29 @@
-import { Alignment, Icon, Navbar, Text } from '@blueprintjs/core';
+import { gql, useQuery } from '@apollo/client';
+import { Alignment, Icon, Navbar, Spinner, Text } from '@blueprintjs/core';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 import './navigation.css';
 
+const GET_PROFILE = gql`
+  query GetProfile {
+    me {
+      name
+      defaultAccess
+    }
+  }
+`;
+
+interface Profile {
+  me: {
+    name: string;
+    defaultAccess: string;
+  };
+}
+
 const Navigation = (): JSX.Element => {
+  const { loading, data } = useQuery<Profile>(GET_PROFILE);
+
   return (
     <Navbar>
       <Navbar.Group align={Alignment.LEFT}>
@@ -14,14 +33,16 @@ const Navigation = (): JSX.Element => {
           <Icon icon="home" />
           <Text>Home</Text>
         </NavLink>
-        <NavLink to="/admin" role="button" className="bp4-button bp4-minimal">
-          <Icon icon="settings" />
-          <Text>Admin</Text>
-        </NavLink>
+        {data?.me.defaultAccess === 'ADMIN' && (
+          <NavLink to="/admin" role="button" className="bp4-button bp4-minimal">
+            <Icon icon="settings" />
+            <Text>Admin</Text>
+          </NavLink>
+        )}
       </Navbar.Group>
       <Navbar.Group align={Alignment.RIGHT} className="visible-sm">
         <Icon icon="person" className="icon" />
-        <Text>Alex Krantz</Text>
+        {loading || !data ? <Spinner size={25} /> : <Text>{data.me.name}</Text>}
       </Navbar.Group>
     </Navbar>
   );
