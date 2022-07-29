@@ -1,0 +1,17 @@
+.card {
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .card {
+    margin-left: 2.5rem;
+    margin-right: 2.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .card {
+    margin-left: 5rem;
+    margin-right: 5rem;
+  }
+}

@@ -1,0 +1,9 @@
+.visible-sm {
+  visibility: hidden;
+}
+
+@media (min-width: 640px) {
+  .visible-sm {
+    visibility: visible;
+  }
+}
