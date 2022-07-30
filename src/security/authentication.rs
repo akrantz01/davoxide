@@ -43,11 +43,11 @@ async fn load_user<B>(req: &Request<B>) -> Result<User> {
             .typed_get::<Authorization<Basic>>()
             .ok_or(Error::Unauthorized)?;
 
-        let user = User::get(db, &credentials.username())
+        let user = User::get(db, credentials.username())
             .await?
             .ok_or(Error::Unauthorized)?;
 
-        if user.access_token_valid(&credentials.password()) {
+        if user.access_token_valid(credentials.password()) {
             Ok(user)
         } else {
             Err(Error::Unauthorized)

@@ -30,9 +30,9 @@ fn effective_permission(permissions: Vec<Permission>, default: Action, path: &Pa
     let mut effective = default;
 
     for permission in permissions {
-        if path.starts_with(&permission.path) && permission.affects_children {
-            effective = permission.action;
-        } else if path == Path::new(&permission.path) {
+        if (path.starts_with(&permission.path) && permission.affects_children)
+            || path == Path::new(&permission.path)
+        {
             effective = permission.action;
         }
     }

@@ -15,7 +15,7 @@ pub fn sanitize_path(raw: PathBuf) -> Result<PathBuf> {
         match component {
             Component::Prefix(_) | Component::RootDir | Component::CurDir => continue,
             Component::ParentDir => {
-                if sanitized.len() == 0 {
+                if sanitized.is_empty() {
                     return Err(Error::InvalidPermissions);
                 } else {
                     sanitized.pop();
