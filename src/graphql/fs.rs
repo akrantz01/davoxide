@@ -12,7 +12,9 @@ use tokio_stream::{wrappers::ReadDirStream, StreamExt};
 /// Get a list of all items specified directory
 pub async fn list(base: &Path, path: PathBuf) -> Result<Vec<Entry>> {
     let full_path = base.join(&path);
-    if !full_path.is_dir() {
+    if !full_path.exists() {
+        return Err(Error::NotFound);
+    } else if !full_path.is_dir() {
         return Err(Error::NotADirectory);
     }
 

@@ -85,11 +85,17 @@ const Files = (): JSX.Element => {
           intent: 'danger',
           timeout: 2500,
         });
-        navigate(`/files`);
+        navigate('/files');
+        break;
+
+      case 'not found':
+        Toaster.show({ message: 'The requested resource could not be found', intent: 'warning', timeout: 2500 });
+        navigate('/files');
         break;
 
       default:
         Toaster.show({ message: 'An unknown error occurred', intent: 'danger' });
+        console.error(error.message);
         break;
     }
   }, [loading, error]);
