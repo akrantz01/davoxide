@@ -1,4 +1,5 @@
-import { Classes, Icon, IconName, Text } from '@blueprintjs/core';
+import { Classes, Icon, IconName, Position, Text } from '@blueprintjs/core';
+import { Tooltip2 } from '@blueprintjs/popover2';
 import classNames from 'classnames';
 import fileSize from 'filesize';
 import { DateTime } from 'luxon';
@@ -43,9 +44,11 @@ const Entry = ({ type, name, path, lastModified, size }: DirectoryEntry): JSX.El
       {type === Type.File && (
         <div className="actions">
           <span>{fileSize(size, { base: 2 })}</span>
-          <a href={BASE_URL + '/dav/' + path} className={classNames(Classes.BUTTON, Classes.SMALL, Classes.MINIMAL)}>
-            <Icon icon="cloud-download" />
-          </a>
+          <Tooltip2 content="Download" position={Position.LEFT}>
+            <a href={BASE_URL + '/dav/' + path} className={classNames(Classes.BUTTON, Classes.SMALL, Classes.MINIMAL)}>
+              <Icon icon="cloud-download" />
+            </a>
+          </Tooltip2>
         </div>
       )}
     </div>
