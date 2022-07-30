@@ -68,6 +68,11 @@ const Files = (): JSX.Element => {
 
   const previousDirectory = `/files/${path.split('/').slice(0, -1).join('/')}`;
 
+  // Change the page title
+  useEffect(() => {
+    document.title = `DAVOxide - ${path === '/' ? path : '/' + path}`;
+  }, [path]);
+
   // Handle errors
   useEffect(() => {
     if (loading || !error) return;
