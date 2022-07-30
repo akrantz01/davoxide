@@ -12,12 +12,18 @@
   "dependencies": {
     "@apollo/client": "^3.6.9",
     "@blueprintjs/core": "^4.7.0",
+    "@blueprintjs/popover2": "^1.5.0",
+    "classnames": "^2.3.1",
+    "filesize": "^9.0.11",
     "graphql": "^16.5.0",
+    "luxon": "^3.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "6"
+    "react-router-dom": "6",
+    "url-join": "^5.0.0"
   },
   "devDependencies": {
+    "@types/luxon": "^3.0.0",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
     "@typescript-eslint/eslint-plugin": "^5.31.0",

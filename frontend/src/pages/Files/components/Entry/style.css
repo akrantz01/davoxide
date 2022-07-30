@@ -1,0 +1,38 @@
+.entry {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  justify-content: space-between;
+  vertical-align: middle;
+}
+
+.label {
+  display: flex;
+}
+
+.label .label-content {
+  margin-left: 0.5rem;
+}
+
+.last-modified {
+  display: none;
+  text-align: center;
+}
+
+.actions {
+  display: flex;
+  justify-content: end;
+}
+
+.actions > * {
+  margin-left: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .entry {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .last-modified {
+    display: block;
+  }
+}

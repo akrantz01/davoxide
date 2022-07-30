@@ -15,7 +15,14 @@
 
 @media (min-width: 768px) {
   .card {
-    margin-left: 5rem;
-    margin-right: 5rem;
+    margin-left: 10%;
+    margin-right: 10%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card {
+    margin-left: 25%;
+    margin-right: 25%;
   }
 }

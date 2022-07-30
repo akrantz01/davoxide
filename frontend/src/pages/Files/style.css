@@ -1,0 +1,13 @@
+.files {
+  margin: 1.5rem 0;
+}
+
+.files > * {
+  padding: 1rem 0;
+}
+
+.files > * + * {
+  border-color: #e5e7eb;
+  border-top-width: 1px;
+  border-top-style: solid;
+}
