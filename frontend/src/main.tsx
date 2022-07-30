@@ -13,6 +13,7 @@ import Layout from './components/Layout';
 import Files from './pages/Files';
 import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
+import UsersList from './pages/UsersList';
 
 const root = document.getElementById('root') as HTMLElement;
 ReactDOM.createRoot(root).render(
@@ -24,6 +25,7 @@ ReactDOM.createRoot(root).render(
             <Route index element={<Files />} />
             <Route path="/files/*" element={<Files />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/admin" element={<UsersList />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
