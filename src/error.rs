@@ -28,8 +28,6 @@ pub enum Error {
     BadRequest,
     /// For when the requested action is only valid on directories
     NotADirectory,
-    /// For when the requested action is only valid on files
-    NotAFile,
     /// Used when an unexpected and unhandleable error occurs
     /// i.e. database or file system errors
     Unexpected(Box<dyn StdError + Send + Sync>),
@@ -67,7 +65,6 @@ impl Display for Error {
             Self::NotFound => write!(f, "not found"),
             Self::BadRequest => write!(f, "bad request"),
             Self::NotADirectory => write!(f, "path is not a directory"),
-            Self::NotAFile => write!(f, "path is not a file"),
             Self::Unexpected(e) => {
                 error!(error = %e, source = ?e.source(), "an unexpected error occurred");
                 write!(f, "an unexpected error occurred")
@@ -93,7 +90,6 @@ impl IntoResponse for Error {
             Self::NotADirectory => {
                 static_response("path is not a directory", StatusCode::BAD_REQUEST)
             }
-            Self::NotAFile => static_response("path is not a file", StatusCode::BAD_REQUEST),
             Self::Unexpected(e) => {
                 error!(error = %e, source = ?e.source(), "an unexpected error occurred");
                 static_response("internal server error", StatusCode::INTERNAL_SERVER_ERROR)

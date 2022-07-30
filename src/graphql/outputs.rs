@@ -11,8 +11,3 @@ pub(crate) struct DeleteResult<T: OutputType> {
 pub(crate) struct RegenerateAccessTokenResult {
     pub token: String,
 }
-
-#[derive(SimpleObject)]
-pub(crate) struct DownloadUrlResult {
-    pub url: String,
-}

@@ -1,7 +1,4 @@
-use super::{
-    fs::{self, Entry},
-    outputs::DownloadUrlResult,
-};
+use super::fs::{self, Entry};
 use crate::{
     config::Config,
     database::{Action, User},
@@ -59,25 +56,5 @@ impl Query {
         let entries = fs::list(&config.path, sanitized).await?;
 
         Ok(entries)
-    }
-
-    async fn download_url(&self, ctx: &Context<'_>, path: String) -> Result<DownloadUrlResult> {
-        let config = ctx.data::<Arc<Config>>()?;
-        let db = ctx.data::<PgPool>()?;
-        let user = ctx.data::<User>()?;
-
-        // Check if the user has the necessary permissions
-        let sanitized = sanitize_path(path.into())?;
-        check_permissions(db, user, &sanitized, Action::Read).await?;
-
-        // Only allow downloading files
-        let path = config.path.join(&sanitized);
-        if !path.is_file() {
-            return Err(Error::NotAFile.into());
-        }
-
-        Ok(DownloadUrlResult {
-            url: format!("/dav/{}", sanitized.display()),
-        })
     }
 }
