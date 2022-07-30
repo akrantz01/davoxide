@@ -10,6 +10,7 @@ const GET_PROFILE = gql`
   query GetProfile {
     me {
       name
+      username
       defaultAccess
     }
   }

@@ -12,6 +12,7 @@ import { client } from './api';
 import Layout from './components/Layout';
 import Files from './pages/Files';
 import NotFound from './pages/NotFound';
+import Profile from './pages/Profile';
 
 const root = document.getElementById('root') as HTMLElement;
 ReactDOM.createRoot(root).render(
@@ -22,6 +23,7 @@ ReactDOM.createRoot(root).render(
           <Routes>
             <Route index element={<Files />} />
             <Route path="/files/*" element={<Files />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
