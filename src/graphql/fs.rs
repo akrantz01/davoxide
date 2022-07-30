@@ -1,18 +1,23 @@
 use crate::error::{Error, Result};
 use async_graphql::{Enum, SimpleObject};
-use std::{fs::FileType, path::PathBuf, time::SystemTime};
+use std::{
+    fs::FileType,
+    path::{Path, PathBuf},
+    time::SystemTime,
+};
 use time::OffsetDateTime;
 use tokio::fs;
 use tokio_stream::{wrappers::ReadDirStream, StreamExt};
 
 /// Get a list of all items specified directory
-pub async fn list(path: PathBuf) -> Result<Vec<Entry>> {
-    if !path.is_dir() {
+pub async fn list(base: &Path, path: PathBuf) -> Result<Vec<Entry>> {
+    let full_path = base.join(&path);
+    if !full_path.is_dir() {
         return Err(Error::NotADirectory);
     }
 
     // List the directory
-    let read_dir = fs::read_dir(path).await?;
+    let read_dir = fs::read_dir(full_path).await?;
     let mut stream = ReadDirStream::new(read_dir);
 
     let mut entries = Vec::new();
@@ -29,6 +34,7 @@ pub async fn list(path: PathBuf) -> Result<Vec<Entry>> {
         // Add the entry
         entries.push(Entry {
             kind: meta.file_type().into(),
+            path: path.join(&name).display().to_string(),
             name,
             created_at,
             last_modified,
@@ -64,6 +70,7 @@ pub struct Entry {
     #[graphql(name = "type")]
     kind: Type,
     name: String,
+    path: String,
     created_at: OffsetDateTime,
     last_modified: OffsetDateTime,
     size: u64,

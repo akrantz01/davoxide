@@ -56,8 +56,7 @@ impl Query {
         check_permissions(db, user, &sanitized, Action::Read).await?;
 
         // Get the contents
-        let path = config.path.join(sanitized);
-        let entries = fs::list(path).await?;
+        let entries = fs::list(&config.path, sanitized).await?;
 
         Ok(entries)
     }
