@@ -1,5 +1,5 @@
 import { gql, useQuery } from '@apollo/client';
-import { BreadcrumbProps, H1, Spinner } from '@blueprintjs/core';
+import { BreadcrumbProps, H1, NonIdealState, Spinner } from '@blueprintjs/core';
 import { Breadcrumbs2 } from '@blueprintjs/popover2';
 import React, { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -113,6 +113,13 @@ const Files = (): JSX.Element => {
         {(loading || !data) && <Spinner />}
         {directories.length !== 0 && directories.map((entry) => <Entry key={entry.name} {...entry} />)}
         {files.length !== 0 && files.map((entry) => <Entry key={entry.name} {...entry} />)}
+        {directories.length === 0 && files.length === 0 && (
+          <NonIdealState
+            icon="search"
+            title="There's nothing here"
+            description="It looks like there are no files or folders in this directory. You can create some using the WebDAV interface."
+          />
+        )}
       </div>
       <BackButton to={previousDirectory} disabled={path === '/'} />
     </>
