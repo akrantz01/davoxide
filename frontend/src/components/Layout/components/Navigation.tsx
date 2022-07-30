@@ -42,7 +42,13 @@ const Navigation = (): JSX.Element => {
       </Navbar.Group>
       <Navbar.Group align={Alignment.RIGHT} className="visible-sm">
         <Icon icon="person" className="icon" />
-        {loading || !data ? <Spinner size={25} /> : <Text>{data.me.name}</Text>}
+        {loading || !data ? (
+          <Spinner size={25} />
+        ) : (
+          <NavLink to="/profile" role="button" className="bp4-button bp4-minimal">
+            <Text>{data.me.name}</Text>
+          </NavLink>
+        )}
       </Navbar.Group>
     </Navbar>
   );
