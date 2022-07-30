@@ -3,8 +3,7 @@ import classNames from 'classnames';
 import fileSize from 'filesize';
 import { DateTime } from 'luxon';
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import urlJoin from 'url-join';
+import { Link } from 'react-router-dom';
 
 import { DirectoryEntry, Type } from './types';
 
@@ -25,21 +24,15 @@ const iconForType = (type: Type): IconName => {
   }
 };
 
-const buildFilePath = (file: string): string => {
-  const { pathname } = useLocation();
-  return urlJoin(pathname === '/' ? '/files' : pathname, file);
-};
-
-const Entry = ({ type, name, lastModified, size }: DirectoryEntry): JSX.Element => {
+const Entry = ({ type, name, path, lastModified, size }: DirectoryEntry): JSX.Element => {
   const icon = iconForType(type);
-  const path = buildFilePath(name);
 
   return (
     <div className="entry">
       <div className="label">
         <Icon icon={icon} />
         {type === Type.Directory ? (
-          <Link to={path} className="label-content">
+          <Link to={'/files/' + path} className="label-content">
             {name}
           </Link>
         ) : (
@@ -50,10 +43,7 @@ const Entry = ({ type, name, lastModified, size }: DirectoryEntry): JSX.Element 
       {type === Type.File && (
         <div className="actions">
           <span>{fileSize(size, { base: 2 })}</span>
-          <a
-            href={BASE_URL + path.replace('/files', '/dav')}
-            className={classNames(Classes.BUTTON, Classes.SMALL, Classes.MINIMAL)}
-          >
+          <a href={BASE_URL + '/dav/' + path} className={classNames(Classes.BUTTON, Classes.SMALL, Classes.MINIMAL)}>
             <Icon icon="cloud-download" />
           </a>
         </div>

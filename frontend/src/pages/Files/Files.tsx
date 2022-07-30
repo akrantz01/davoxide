@@ -7,16 +7,16 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Toaster from '../../toasts';
 import BackButton from './components/BackButton';
 import Breadcrumb from './components/Breadcrumb';
-import Entry, { DirectoryEntry } from './components/Entry';
+import Entry, { DirectoryEntry, Type } from './components/Entry';
 
 import './style.css';
-import { Type } from './components/Entry/types';
 
 const LIST_DIRECTORY = gql`
   query ListDirectory($path: String) {
     listDirectory(path: $path) {
       type
       name
+      path
       lastModified
       size
     }
