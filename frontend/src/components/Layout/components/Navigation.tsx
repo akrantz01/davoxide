@@ -1,5 +1,6 @@
 import { gql, useQuery } from '@apollo/client';
-import { Alignment, Icon, Navbar, Spinner, Text } from '@blueprintjs/core';
+import { Alignment, Classes, Icon, Navbar, Spinner, Text } from '@blueprintjs/core';
+import classNames from 'classnames';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
@@ -29,12 +30,12 @@ const Navigation = (): JSX.Element => {
       <Navbar.Group align={Alignment.LEFT}>
         <Navbar.Heading>DAVoxide</Navbar.Heading>
         <Navbar.Divider />
-        <NavLink to="/" role="button" className="bp4-button bp4-minimal">
+        <NavLink to="/" role="button" className={classNames(Classes.BUTTON, Classes.MINIMAL)}>
           <Icon icon="home" />
           <Text>Home</Text>
         </NavLink>
         {data?.me.defaultAccess === 'ADMIN' && (
-          <NavLink to="/admin" role="button" className="bp4-button bp4-minimal">
+          <NavLink to="/admin" role="button" className={classNames(Classes.BUTTON, Classes.MINIMAL)}>
             <Icon icon="settings" />
             <Text>Admin</Text>
           </NavLink>
@@ -45,7 +46,7 @@ const Navigation = (): JSX.Element => {
         {loading || !data ? (
           <Spinner size={25} />
         ) : (
-          <NavLink to="/profile" role="button" className="bp4-button bp4-minimal">
+          <NavLink to="/profile" role="button" className={classNames(Classes.BUTTON, Classes.MINIMAL)}>
             <Text>{data.me.name}</Text>
           </NavLink>
         )}
