@@ -30,7 +30,7 @@ async fn main() -> eyre::Result<()> {
     // Configure routes
     let app = Router::new()
         .route("/dav/*path", any(webdav::handler))
-        .route("/graphql", post(graphql::handler))
+        .route("/api/graphql", post(graphql::handler))
         .layer(Extension(webdav::filesystem(&config.path)))
         .layer(Extension(graphql::schema(config.clone(), db.clone())))
         .layer(middleware::from_fn(security::middleware))

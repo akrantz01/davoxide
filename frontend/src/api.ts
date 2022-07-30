@@ -7,7 +7,7 @@ if (import.meta.env.VITE_AUTH_NAME && import.meta.env.VITE_AUTH_USER) {
 }
 
 export const client = new ApolloClient({
-  uri: import.meta.env.VITE_API_URL || `${window.origin}/api/graphql`,
+  uri: `${import.meta.env.VITE_BASE_URL || window.origin}/api/graphql`,
   cache: new InMemoryCache(),
   headers,
 });
