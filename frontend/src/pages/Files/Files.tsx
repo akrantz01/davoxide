@@ -4,10 +4,13 @@ import { Breadcrumbs2 } from '@blueprintjs/popover2';
 import React, { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import Toaster from '../../toasts';
+import { usePageTitle } from '@lib/hooks';
+import { danger, warning } from '@lib/toasts';
+import { Entry as DirectoryEntry, EntryType } from '@lib/types';
+
 import BackButton from './components/BackButton';
 import Breadcrumb from './components/Breadcrumb';
-import Entry, { DirectoryEntry, Type } from './components/Entry';
+import Entry from './components/Entry';
 
 import './style.css';
 
@@ -66,12 +69,9 @@ const Files = (): JSX.Element => {
     variables: { path },
   });
 
-  const previousDirectory = `/files/${path.split('/').slice(0, -1).join('/')}`;
+  usePageTitle(path === '/' ? path : '/' + path);
 
-  // Change the page title
-  useEffect(() => {
-    document.title = `DAVOxide - ${path === '/' ? path : '/' + path}`;
-  }, [path]);
+  const previousDirectory = `/files/${path.split('/').slice(0, -1).join('/')}`;
 
   // Handle errors
   useEffect(() => {
@@ -80,26 +80,22 @@ const Files = (): JSX.Element => {
     switch (error.message) {
       // Navigate to the parent directory if not a directory
       case 'path is not a directory':
-        Toaster.show({ message: 'The requested file is not a directory', intent: 'warning', timeout: 2500 });
+        warning('The requested path is not a directory');
         navigate(previousDirectory);
         break;
 
       case 'permission denied':
-        Toaster.show({
-          message: 'You do not have permissions to access this resource',
-          intent: 'danger',
-          timeout: 2500,
-        });
+        danger('You do not have permission to access this path');
         navigate('/files');
         break;
 
       case 'not found':
-        Toaster.show({ message: 'The requested resource could not be found', intent: 'warning', timeout: 2500 });
+        warning('The requested path could not be found');
         navigate('/files');
         break;
 
       default:
-        Toaster.show({ message: 'An unknown error occurred', intent: 'danger' });
+        danger('An unknown error occurred');
         console.error(error.message);
         break;
     }
@@ -107,8 +103,8 @@ const Files = (): JSX.Element => {
 
   // Order directories by name and files by name
   const entries = data?.listDirectory || [];
-  const directories = entries.filter((e) => e.type === Type.Directory).sort(orderEntries);
-  const files = entries.filter((e) => e.type !== Type.Directory).sort(orderEntries);
+  const directories = entries.filter((e) => e.type === EntryType.Directory).sort(orderEntries);
+  const files = entries.filter((e) => e.type !== EntryType.Directory).sort(orderEntries);
 
   return (
     <>

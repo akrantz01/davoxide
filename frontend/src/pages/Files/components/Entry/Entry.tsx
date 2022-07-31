@@ -6,19 +6,19 @@ import { DateTime } from 'luxon';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { DirectoryEntry, Type } from './types';
+import { Entry as DirectoryEntry, EntryType } from '@lib/types';
 
 import './style.css';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL || window.origin;
 
-const iconForType = (type: Type): IconName => {
+const iconForType = (type: EntryType): IconName => {
   switch (type) {
-    case Type.Directory:
+    case EntryType.Directory:
       return 'folder-close';
-    case Type.File:
+    case EntryType.File:
       return 'document';
-    case Type.Unknown:
+    case EntryType.Unknown:
       return 'help';
     default:
       throw new TypeError(`invalid type for directory entry: ${type}`);
@@ -32,7 +32,7 @@ const Entry = ({ type, name, path, lastModified, size }: DirectoryEntry): JSX.El
     <div className="entry">
       <div className="label">
         <Icon icon={icon} />
-        {type === Type.Directory ? (
+        {type === EntryType.Directory ? (
           <Link to={'/files/' + path} className="label-content">
             {name}
           </Link>
@@ -41,7 +41,7 @@ const Entry = ({ type, name, path, lastModified, size }: DirectoryEntry): JSX.El
         )}
       </div>
       <Text className="last-modified">{DateTime.fromISO(lastModified).toLocaleString(DateTime.DATETIME_MED)}</Text>
-      {type === Type.File && (
+      {type === EntryType.File && (
         <div className="actions">
           <span>{fileSize(size, { base: 2 })}</span>
           <Tooltip2 content="Download" position={Position.LEFT}>

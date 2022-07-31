@@ -2,8 +2,8 @@ import { gql, useMutation } from '@apollo/client';
 import { Button, Classes, Dialog, FormGroup, HTMLSelect, InputGroup, Intent, Switch } from '@blueprintjs/core';
 import React, { useEffect, useState } from 'react';
 
-import Toaster from '../../../toasts';
-import { Action } from '../types';
+import { danger } from '@lib/toasts';
+import { ACTION_SELECT_OPTIONS, Action } from '@lib/types';
 
 const ASSIGN_PERMISSION = gql`
   mutation AssignPermission($user: String!, $path: String!, $action: Action!, $affectsChildren: Boolean!) {
@@ -19,13 +19,6 @@ interface AssignPermissionVariables {
   action: Action;
   affectsChildren: boolean;
 }
-
-const ACTION_SELECT_OPTIONS = [
-  { label: 'Admin access', value: Action.Admin },
-  { label: 'Allow modification', value: Action.Modify },
-  { label: 'Read-only', value: Action.Read },
-  { label: 'No access', value: Action.Deny },
-];
 
 interface Props {
   user: string;
@@ -49,7 +42,7 @@ const AssignPermission = ({ user }: Props): JSX.Element => {
   useEffect(() => {
     if (loading || !error) return;
 
-    Toaster.show({ message: 'An unexpected error occurred', intent: Intent.DANGER, timeout: 2500 });
+    danger('An unexpected error occurred');
     console.error(error.message);
   }, [loading, error]);
 

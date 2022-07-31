@@ -1,10 +1,14 @@
 import { gql, useQuery } from '@apollo/client';
-import { H1, HTMLTable, Intent, NonIdealState, Spinner, Tag } from '@blueprintjs/core';
+import { H1, HTMLTable, NonIdealState, Spinner } from '@blueprintjs/core';
 import React, { ReactNode, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+import ActionTag from '@components/ActionTag';
+import { usePageTitle } from '@lib/hooks';
+import { danger } from '@lib/toasts';
+import { User } from '@lib/types';
+
 import './style.css';
-import Toaster from '../../toasts';
 
 const LIST_USERS = gql`
   query ListUsers {
@@ -16,14 +20,8 @@ const LIST_USERS = gql`
   }
 `;
 
-interface User {
-  name: string;
-  username: string;
-  defaultAccess: string;
-}
-
 interface ListUsers {
-  users: User[];
+  users: Omit<User, 'permissions'>[];
 }
 
 interface CenteredRowProps {
@@ -38,44 +36,23 @@ const CenteredRow = ({ children }: CenteredRowProps): JSX.Element => (
   </tr>
 );
 
-const intentForAccess = (access: string): Intent => {
-  switch (access) {
-    case 'ADMIN':
-      return Intent.DANGER;
-    case 'MODIFY':
-    case 'READ':
-      return Intent.PRIMARY;
-    case 'DENY':
-      return Intent.WARNING;
-    default:
-      throw new TypeError(`unknown permission: ${access}`);
-  }
-};
-
 const UsersList = (): JSX.Element => {
   const navigate = useNavigate();
   const { data, error, loading } = useQuery<ListUsers>(LIST_USERS);
 
-  // Set the page title
-  useEffect(() => {
-    document.title = 'DAVOxide - Admin';
-  }, []);
+  usePageTitle('Admin');
 
   useEffect(() => {
     if (loading || !error) return;
 
     switch (error.message) {
       case 'permission denied':
-        Toaster.show({
-          message: 'You do not have permissions to access this page',
-          intent: Intent.DANGER,
-          timeout: 2500,
-        });
+        danger('You do not have permissions to access this page');
         navigate('/');
         break;
 
       default:
-        Toaster.show({ message: 'An unknown error occurred', intent: Intent.DANGER, timeout: 2500 });
+        danger('An unknown error occurred');
         console.error(error.message);
         break;
     }
@@ -117,7 +94,7 @@ const UsersList = (): JSX.Element => {
               <td>{user.name}</td>
               <td>{user.username}</td>
               <td>
-                <Tag intent={intentForAccess(user.defaultAccess)}>{user.defaultAccess}</Tag>
+                <ActionTag action={user.defaultAccess} />
               </td>
               <td className="actions">
                 <Link to={user.username}>Details</Link>

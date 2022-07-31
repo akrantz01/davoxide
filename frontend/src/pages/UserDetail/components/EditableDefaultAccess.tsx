@@ -2,9 +2,9 @@ import { gql, useMutation } from '@apollo/client';
 import { Button, Classes, Dialog, FormGroup, HTMLSelect, Intent } from '@blueprintjs/core';
 import React, { useEffect, useState } from 'react';
 
-import Toaster from '../../../toasts';
-import { Action } from '../types';
-import ActionTag from './ActionTag';
+import ActionTag from '@components/ActionTag';
+import { danger } from '@lib/toasts';
+import { ACTION_SELECT_OPTIONS, Action } from '@lib/types';
 
 const UPDATE_DEFAULT_PERMISSION = gql`
   mutation UpdateDefaultAccess($user: String!, $action: Action!) {
@@ -19,13 +19,6 @@ interface UpdateDefaultPermissionVariables {
   user: string;
   action: Action;
 }
-
-const ACTION_SELECT_OPTIONS = [
-  { label: 'Admin access', value: Action.Admin },
-  { label: 'Allow modification', value: Action.Modify },
-  { label: 'Read-only', value: Action.Read },
-  { label: 'No access', value: Action.Deny },
-];
 
 interface Props {
   user: string;
@@ -50,7 +43,7 @@ const EditableDefaultAccess = ({ action: defaultAction, user }: Props): JSX.Elem
   useEffect(() => {
     if (loading || !error) return;
 
-    Toaster.show({ message: 'An unexpected error occurred', intent: Intent.DANGER, timeout: 2500 });
+    danger('An unexpected error occurred');
     console.error(error.message);
   }, [loading, error]);
 

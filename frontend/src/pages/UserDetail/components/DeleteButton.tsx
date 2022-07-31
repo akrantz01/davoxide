@@ -3,7 +3,7 @@ import { Alert, Button, Intent, Text } from '@blueprintjs/core';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import Toaster from '../../../toasts';
+import { danger, success } from '@lib/toasts';
 
 const DELETE_USER = gql`
   mutation DeleteUser($user: String!) {
@@ -33,7 +33,7 @@ const DeleteButton = ({ user }: Props): JSX.Element => {
     if (!loading) setOpen(false);
     if (loading || !data) return;
 
-    Toaster.show({ message: `Successfully deleted user ${user}`, intent: Intent.SUCCESS, timeout: 2500 });
+    success(`Successfully deleted user ${user}`);
     navigate('/admin');
   }, [loading]);
 
@@ -42,11 +42,11 @@ const DeleteButton = ({ user }: Props): JSX.Element => {
 
     switch (error.message) {
       case 'cannot delete yourself':
-        Toaster.show({ message: 'You cannot delete yourself', intent: Intent.DANGER, timeout: 2500 });
+        danger('You cannot delete yourself');
         break;
 
       default:
-        Toaster.show({ message: 'An unexpected error occurred', intent: Intent.DANGER, timeout: 2500 });
+        danger('An unexpected error occurred');
         console.log(error.message);
         break;
     }

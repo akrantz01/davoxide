@@ -3,9 +3,9 @@ import { Alert, Button, Intent, Position, Tag, Text } from '@blueprintjs/core';
 import { Tooltip2 } from '@blueprintjs/popover2';
 import React, { useEffect, useState } from 'react';
 
-import Toaster from '../../../toasts';
-import { Permission } from '../types';
-import ActionTag from './ActionTag';
+import ActionTag from '@components/ActionTag';
+import { danger } from '@lib/toasts';
+import { Permission } from '@lib/types';
 
 const UNASSIGN_PERMISSION = gql`
   mutation UnassignPermission($id: Int!) {
@@ -32,7 +32,7 @@ const PermissionRow = (permission: Permission): JSX.Element => {
   useEffect(() => {
     if (loading || !error) return;
 
-    Toaster.show({ message: 'An unexpected error occurred', intent: Intent.DANGER, timeout: 2500 });
+    danger('An unexpected error occurred');
     console.error(error.message);
   }, [loading, error]);
 

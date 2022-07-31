@@ -1,7 +1,7 @@
 import { Intent, Tag, TagProps } from '@blueprintjs/core';
 import React from 'react';
 
-import { Action } from '../types';
+import { Action } from '@lib/types';
 
 const decodeIntent = (action?: Action): Intent | undefined => {
   if (!action) return undefined;

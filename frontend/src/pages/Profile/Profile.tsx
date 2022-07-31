@@ -3,6 +3,9 @@ import { Alert, Button, Callout, Classes, H1, H4, H5, Pre, Spinner, Text } from 
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 
+import { usePageTitle } from '@lib/hooks';
+import { User } from '@lib/types';
+
 import './style.css';
 
 const DAV_URL = `${import.meta.env.VITE_BASE_URL || window.origin}/dav`.replace('http', 'dav');
@@ -17,10 +20,7 @@ const GET_DETAILED_PROFILE = gql`
 `;
 
 interface DetailedProfile {
-  me: {
-    name: string;
-    username: string;
-  };
+  me: Pick<User, 'name' | 'username'>;
 }
 
 const REGENERATE_ACCESS_TOKEN = gql`
@@ -56,10 +56,7 @@ const Profile = (): JSX.Element => {
 
   const [isOpen, setOpen] = useState(false);
 
-  // Set the page title
-  useEffect(() => {
-    document.title = 'DAVOxide - Profile';
-  }, []);
+  usePageTitle('Profile');
 
   // Close the re-generate dialog once complete
   useEffect(() => {

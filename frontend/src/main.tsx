@@ -1,6 +1,6 @@
 import { ApolloProvider } from '@apollo/client';
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import 'normalize.css/normalize.css';
@@ -8,7 +8,8 @@ import '@blueprintjs/core/lib/css/blueprint.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/popover2/lib/css/blueprint-popover2.css';
 
-import { client } from './api';
+import { client } from '@lib/api';
+
 import Layout from './components/Layout';
 import Files from './pages/Files';
 import NotFound from './pages/NotFound';
@@ -17,7 +18,7 @@ import UserDetail from './pages/UserDetail';
 import UsersList from './pages/UsersList';
 
 const root = document.getElementById('root') as HTMLElement;
-ReactDOM.createRoot(root).render(
+createRoot(root).render(
   <React.StrictMode>
     <ApolloProvider client={client}>
       <BrowserRouter>

@@ -4,12 +4,14 @@ import classNames from 'classnames';
 import React, { ReactNode, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
-import Toaster from '../../toasts';
+import { usePageTitle } from '@lib/hooks';
+import { danger, warning } from '@lib/toasts';
+import { User } from '@lib/types';
+
 import AssignPermission from './components/AssignPermission';
 import DeleteButton from './components/DeleteButton';
 import EditableDefaultAccess from './components/EditableDefaultAccess';
 import PermissionRow from './components/PermissionRow';
-import { User } from './types';
 
 import './style.css';
 
@@ -62,14 +64,11 @@ const CenteredRow = ({ children }: CenteredRowProps): JSX.Element => (
 );
 
 const UserDetail = (): JSX.Element => {
-  const navigate = useNavigate();
   const { username = '' } = useParams();
-  const { loading, data, error } = useQuery<GetUser, GetUserVariables>(GET_USER, { variables: { username } });
+  usePageTitle(`Admin - ${username}`);
 
-  // Set the page title
-  useEffect(() => {
-    document.title = `DAVOxide - Admin - ${username}`;
-  }, []);
+  const navigate = useNavigate();
+  const { loading, data, error } = useQuery<GetUser, GetUserVariables>(GET_USER, { variables: { username } });
 
   // Handle errors
   useEffect(() => {
@@ -77,21 +76,17 @@ const UserDetail = (): JSX.Element => {
 
     switch (error.message) {
       case 'not found':
-        Toaster.show({ message: 'The requested user could not be found', intent: 'warning', timeout: 2500 });
+        warning('The requested user could not be found');
         navigate('/admin');
         break;
 
       case 'permission denied':
-        Toaster.show({
-          message: 'You do not have permissions to access this page',
-          intent: 'danger',
-          timeout: 2500,
-        });
+        danger('You do not have permissions to access this page');
         navigate('/');
         break;
 
       default:
-        Toaster.show({ message: 'An unknown error occurred', intent: 'danger' });
+        danger('An unknown error occurred');
         console.error(error.message);
         break;
     }

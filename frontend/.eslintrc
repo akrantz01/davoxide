@@ -27,11 +27,15 @@
         }
       }
     ],
+    "import/default": "off",
     "sort-imports": ["error", {"ignoreDeclarationSort": true}]
   },
   "settings": {
     "react": {
       "version": "detect"
+    },
+    "import/resolver": {
+      "typescript": {}
     }
   }
 }
