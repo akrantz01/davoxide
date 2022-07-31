@@ -1,0 +1,22 @@
+.user-details {
+  margin: 1.5rem 0;
+}
+
+.user-permissions {
+  margin: 2rem 0;
+}
+
+.permissions-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.permissions-table {
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+.bottom-actions {
+  display: flex;
+  justify-content: space-between;
+}
