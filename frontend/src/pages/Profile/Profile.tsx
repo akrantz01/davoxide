@@ -1,5 +1,5 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
-import { Alert, Button, Callout, Classes, H1, H4, H5, Pre, Spinner, Text } from '@blueprintjs/core';
+import { Alert, Button, Callout, Classes, H1, H4, H5, Intent, Pre, Spinner, Text } from '@blueprintjs/core';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 
@@ -74,7 +74,7 @@ const Profile = (): JSX.Element => {
           <Button
             className="regenerate-button"
             small
-            intent="warning"
+            intent={Intent.WARNING}
             icon="refresh"
             text="Re-generate"
             loading={regenerateLoading}
@@ -84,13 +84,13 @@ const Profile = (): JSX.Element => {
       </div>
 
       {regenerateData && (
-        <Callout className="callout" intent="warning" title="Your access token">
+        <Callout className="callout" intent={Intent.WARNING} title="Your access token">
           <Pre>{regenerateData.regenerateAccessToken.token}</Pre>
           Save this somewhere safe, it will only be shown once!
         </Callout>
       )}
 
-      <Callout className="callout" intent="primary" title="Connecting with WebDAV">
+      <Callout className="callout" intent={Intent.PRIMARY} title="Connecting with WebDAV">
         To connect using WebDAV, you will need the server&apos;s URL, your username, and your access token. Note that
         your password is not the same as your account&apos;s password.
         <br />
@@ -110,7 +110,7 @@ const Profile = (): JSX.Element => {
         cancelButtonText="Nevermind"
         confirmButtonText="Re-generate"
         icon="warning-sign"
-        intent="warning"
+        intent={Intent.WARNING}
         canOutsideClickCancel={true}
         canEscapeKeyCancel={true}
         loading={regenerateLoading}
