@@ -1,9 +1,10 @@
 import { gql, useQuery } from '@apollo/client';
 import { H1, HTMLTable, Intent, NonIdealState, Spinner, Tag } from '@blueprintjs/core';
 import React, { ReactNode, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import './style.css';
+import Toaster from '../../toasts';
 
 const LIST_USERS = gql`
   query ListUsers {
@@ -52,12 +53,33 @@ const intentForAccess = (access: string): Intent => {
 };
 
 const UsersList = (): JSX.Element => {
-  const { data, loading } = useQuery<ListUsers>(LIST_USERS);
+  const navigate = useNavigate();
+  const { data, error, loading } = useQuery<ListUsers>(LIST_USERS);
 
   // Set the page title
   useEffect(() => {
     document.title = 'DAVOxide - Admin';
   }, []);
+
+  useEffect(() => {
+    if (loading || !error) return;
+
+    switch (error.message) {
+      case 'permission denied':
+        Toaster.show({
+          message: 'You do not have permissions to access this page',
+          intent: Intent.DANGER,
+          timeout: 2500,
+        });
+        navigate('/');
+        break;
+
+      default:
+        Toaster.show({ message: 'An unknown error occurred', intent: Intent.DANGER, timeout: 2500 });
+        console.error(error.message);
+        break;
+    }
+  }, [loading, error]);
 
   const users = data?.users || [];
 

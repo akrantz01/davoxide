@@ -2,6 +2,7 @@ import { gql, useMutation } from '@apollo/client';
 import { Button, Classes, Dialog, FormGroup, HTMLSelect, InputGroup, Intent, Switch } from '@blueprintjs/core';
 import React, { useEffect, useState } from 'react';
 
+import Toaster from '../../../toasts';
 import { Action } from '../types';
 
 const ASSIGN_PERMISSION = gql`
@@ -31,7 +32,7 @@ interface Props {
 }
 
 const AssignPermission = ({ user }: Props): JSX.Element => {
-  const [assign, { loading }] = useMutation<void, AssignPermissionVariables>(ASSIGN_PERMISSION, {
+  const [assign, { loading, error }] = useMutation<void, AssignPermissionVariables>(ASSIGN_PERMISSION, {
     refetchQueries: ['GetUser'],
   });
 
@@ -44,6 +45,13 @@ const AssignPermission = ({ user }: Props): JSX.Element => {
   useEffect(() => {
     if (!loading) setOpen(false);
   }, [loading]);
+
+  useEffect(() => {
+    if (loading || !error) return;
+
+    Toaster.show({ message: 'An unexpected error occurred', intent: Intent.DANGER, timeout: 2500 });
+    console.error(error.message);
+  }, [loading, error]);
 
   return (
     <>
