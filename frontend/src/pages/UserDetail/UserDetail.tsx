@@ -1,11 +1,12 @@
 import { gql, useQuery } from '@apollo/client';
-import { Button, Classes, H1, H3, H5, HTMLTable, Icon, Intent, NonIdealState, Spinner, Text } from '@blueprintjs/core';
+import { Classes, H1, H3, H5, HTMLTable, Icon, NonIdealState, Spinner, Text } from '@blueprintjs/core';
 import classNames from 'classnames';
 import React, { ReactNode, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import Toaster from '../../toasts';
 import AssignPermission from './components/AssignPermission';
+import DeleteButton from './components/DeleteButton';
 import EditableDefaultAccess from './components/EditableDefaultAccess';
 import PermissionRow from './components/PermissionRow';
 import { User } from './types';
@@ -156,7 +157,7 @@ const UserDetail = (): JSX.Element => {
           <Icon icon="arrow-left" />
           <Text>Back</Text>
         </Link>
-        <Button intent={Intent.DANGER} outlined icon="trash" text="Delete" />
+        <DeleteButton user={username} />
       </div>
     </>
   );
