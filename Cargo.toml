@@ -1,17 +1,22 @@
 [package]
 name = "davoxide"
-description = "A WebDAV server written in Rust"
+description = "A simple WebDAV server with a basic web UI, authentication, and permissions"
 authors = ["Alexander Krantz <alex@krantz.dev>"]
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+repository = "https://github.com/akrantz01/davoxide"
+
+keywords = ["webdav"]
+categories = ["command-line-utilities"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 argon2 = "0.4.1"
-async-graphql = { version = "4.0.5", default-features = false, features = ["time", "tracing"] }
-async-graphql-axum = "4.0.5"
-async-trait = "0.1.56"
+async-graphql = { version = "4.0.6", default-features = false, features = ["time", "tracing"] }
+async-graphql-axum = "4.0.6"
+async-trait = "0.1.57"
 axum = { version = "0.5.13", default-features = false, features = ["headers", "http1", "http2"] }
 color-eyre = { version = "0.6.2", default-features = false, features = ["track-caller"] }
 dav-server = { version = "0.4.0", default-features = false, features = ["localfs"] }
@@ -22,10 +27,10 @@ percent-encoding = "2.1.0"
 rand_core = { version = "0.6.3", features = ["std"] }
 rust-embed = "6.4.0"
 sqlx = { version = "0.6.0", features = ["offline", "macros", "migrate", "runtime-tokio-rustls", "postgres"] }
-time = "0.3.11"
-tokio = { version = "1.20.0", features = ["fs", "macros", "rt", "rt-multi-thread", "signal"] }
+time = "0.3.12"
+tokio = { version = "1.20.1", features = ["fs", "macros", "rt", "rt-multi-thread", "signal"] }
 tokio-stream = { version = "0.1.9", default-features = false, features = ["fs"] }
 tower-http = { version = "0.3.4", default-features = false, features = ["request-id", "trace"] }
-tracing = "0.1.35"
+tracing = "0.1.36"
 tracing-subscriber = { version = "0.3.15", features = ["env-filter"] }
 uuid = { version = "1.1.2", features = ["v4"] }
