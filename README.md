@@ -76,4 +76,8 @@ Some future improvements that will be added eventually:
 
 ### Development Setup
 
-1. Install [Rust]() and [] 
+1. Install Rust, NodeJS, and Docker
+2. Start the development containers: `docker compose up -d`
+3. Start the development servers:
+   - API: `cargo run`
+   - UI: `cd frontend && yarn dev`
