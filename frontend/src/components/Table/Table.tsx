@@ -23,16 +23,18 @@ const Table = ({ className, headers, hasActions, loading, children }: Props): JS
   return (
     <HTMLTable className={className}>
       <thead>
-        {headers.map((h, i) => (
-          <th key={i} scope="col">
-            {h}
-          </th>
-        ))}
-        {hasActions && (
-          <th scope="col" className={styles.actions}>
-            <span className={styles.label}>Actions</span>
-          </th>
-        )}
+        <tr>
+          {headers.map((h, i) => (
+            <th key={i} scope="col">
+              {h}
+            </th>
+          ))}
+          {hasActions && (
+            <th scope="col" className={styles.actions}>
+              <span className={styles.label}>Actions</span>
+            </th>
+          )}
+        </tr>
       </thead>
       <tbody>{loading ? spinner : children}</tbody>
     </HTMLTable>
