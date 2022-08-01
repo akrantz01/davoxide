@@ -16,8 +16,10 @@ color-eyre = { version = "0.6.2", default-features = false, features = ["track-c
 dav-server = { version = "0.4.0", default-features = false, features = ["localfs"] }
 dotenv = "0.15.0"
 eyre = "0.6.8"
+mime_guess = "2.0.4"
 percent-encoding = "2.1.0"
 rand_core = { version = "0.6.3", features = ["std"] }
+rust-embed = "6.4.0"
 sqlx = { version = "0.6.0", features = ["offline", "macros", "migrate", "runtime-tokio-rustls", "postgres"] }
 time = "0.3.11"
 tokio = { version = "1.20.0", features = ["fs", "macros", "rt", "rt-multi-thread", "signal"] }

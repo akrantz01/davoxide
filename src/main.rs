@@ -1,4 +1,5 @@
 use axum::{
+    handler::Handler,
     middleware,
     routing::{any, post},
     Extension, Router, Server,
@@ -10,6 +11,7 @@ use tracing::{info, warn};
 mod config;
 mod database;
 mod error;
+mod frontend;
 mod graphql;
 mod logging;
 mod security;
@@ -31,6 +33,7 @@ async fn main() -> eyre::Result<()> {
     let app = Router::new()
         .route("/dav/*path", any(webdav::handler))
         .route("/api/graphql", post(graphql::handler))
+        .fallback(frontend::fallback.into_service())
         .layer(Extension(webdav::filesystem(&config.path)))
         .layer(Extension(graphql::schema(config.clone(), db.clone())))
         .layer(middleware::from_fn(security::middleware))
