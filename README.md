@@ -1,9 +1,9 @@
 # DAVOxide
 > A simple WebDAV server with a basic web UI, authentication, and permissions.
 
-![Crates.io](https://img.shields.io/crates/d/davoxide?style=for-the-badge)
-![Crates.io](https://img.shields.io/crates/v/davoxide?style=for-the-badge)
-![Crates.io](https://img.shields.io/crates/l/davoxide?style=for-the-badge)
+![Docker Pulls](https://img.shields.io/docker/pulls/akrantz/davoxide?style=for-the-badge)
+![Docker Image Version (latest semver)](https://img.shields.io/docker/v/akrantz/davoxide?style=for-the-badge)
+![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/akrantz/davoxide?style=for-the-badge)
 
 DAVOxide provides a simple and lightweight interface to a folder on your server through WebDAV and a simple web UI.
 Most operations are intended to be performed over WebDAV such as modifying files or directories.
@@ -17,12 +17,6 @@ WebDAV clients can authenticate using HTTP basic authentication with a username 
 ![](davoxide.png)
 
 ## Installation
-
-OS X & Linux:
-
-```sh
-cargo install --locked davoxide
-```
 
 Docker:
 
