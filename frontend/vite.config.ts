@@ -12,4 +12,9 @@ export default defineConfig({
       '@lib': path.join(__dirname, 'src/lib'),
     },
   },
+  css: {
+    modules: {
+      localsConvention: 'camelCaseOnly',
+    },
+  },
 });

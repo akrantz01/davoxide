@@ -2,8 +2,7 @@ import { Card, Elevation } from '@blueprintjs/core';
 import React, { ReactNode } from 'react';
 
 import Navigation from './components/Navigation';
-
-import './style.css';
+import styles from './style.module.css';
 
 interface Props {
   children?: ReactNode;
@@ -14,7 +13,7 @@ export const Layout = ({ children }: Props): JSX.Element => {
     <>
       <Navigation />
 
-      <Card elevation={Elevation.TWO} className="card">
+      <Card elevation={Elevation.TWO} className={styles.card}>
         {children}
       </Card>
     </>

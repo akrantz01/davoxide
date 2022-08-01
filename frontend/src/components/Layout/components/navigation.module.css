@@ -1,3 +1,7 @@
+.icon {
+  padding-right: 0.5rem;
+}
+
 .visible-sm {
   visibility: hidden;
 }

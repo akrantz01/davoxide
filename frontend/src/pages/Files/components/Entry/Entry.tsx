@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 
 import { Entry as DirectoryEntry, EntryType } from '@lib/types';
 
-import './style.css';
+import styles from './style.module.css';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL || window.origin;
 
@@ -29,20 +29,22 @@ const Entry = ({ type, name, path, lastModified, size }: DirectoryEntry): JSX.El
   const icon = iconForType(type);
 
   return (
-    <div className="entry">
-      <div className="label">
+    <div className={styles.wrapper}>
+      <div className={styles.label}>
         <Icon icon={icon} />
         {type === EntryType.Directory ? (
-          <Link to={'/files/' + path} className="label-content">
+          <Link to={'/files/' + path} className={styles.labelContent}>
             {name}
           </Link>
         ) : (
-          <Text className="label-content">{name}</Text>
+          <Text className={styles.labelContent}>{name}</Text>
         )}
       </div>
-      <Text className="last-modified">{DateTime.fromISO(lastModified).toLocaleString(DateTime.DATETIME_MED)}</Text>
+      <Text className={styles.lastModified}>
+        {DateTime.fromISO(lastModified).toLocaleString(DateTime.DATETIME_MED)}
+      </Text>
       {type === EntryType.File && (
-        <div className="actions">
+        <div className={styles.actions}>
           <span>{fileSize(size, { base: 2 })}</span>
           <Tooltip2 content="Download" position={Position.LEFT}>
             <a href={BASE_URL + '/dav/' + path} className={classNames(Classes.BUTTON, Classes.SMALL, Classes.MINIMAL)}>

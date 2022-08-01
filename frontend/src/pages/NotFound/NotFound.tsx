@@ -2,7 +2,7 @@ import { Button, Classes, H1, Text } from '@blueprintjs/core';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import './style.css';
+import styles from './style.module.css';
 
 const NotFound = (): JSX.Element => {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ const NotFound = (): JSX.Element => {
       <Text className={Classes.TEXT_LARGE}>
         The requested URL could not be found. Please check it is correct and try again.
       </Text>
-      <Button type="button" className="back-button" onClick={() => navigate(-1)}>
+      <Button type="button" className={styles.backButton} onClick={() => navigate(-1)}>
         Back
       </Button>
     </div>

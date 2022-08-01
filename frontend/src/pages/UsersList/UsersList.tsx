@@ -9,7 +9,7 @@ import { usePageTitle } from '@lib/hooks';
 import { danger } from '@lib/toasts';
 import { User } from '@lib/types';
 
-import './style.css';
+import styles from './style.module.css';
 
 const LIST_USERS = gql`
   query ListUsers {
@@ -52,7 +52,12 @@ const UsersList = (): JSX.Element => {
   return (
     <>
       <H1>Admin</H1>
-      <Table headers={['Name', 'Username', 'Default Permission']} className="users" hasActions loading={loading}>
+      <Table
+        headers={['Name', 'Username', 'Default Permission']}
+        className={styles.wrapper}
+        hasActions
+        loading={loading}
+      >
         {users.length === 0 && (
           <NonIdealRow
             icon="user"

@@ -4,7 +4,7 @@
   max-height: 1rem;
 }
 
-.user-permissions {
+.permissions-wrapper {
   margin: 2rem 0;
 }
 
@@ -18,7 +18,7 @@
   width: 100%;
 }
 
-.bottom-actions {
+.actions {
   display: flex;
   justify-content: space-between;
 }

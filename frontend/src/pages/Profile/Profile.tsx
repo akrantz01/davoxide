@@ -6,7 +6,7 @@ import { Details, Row } from '@components/Details';
 import { usePageTitle } from '@lib/hooks';
 import { User } from '@lib/types';
 
-import './style.css';
+import styles from './style.module.css';
 
 const DAV_URL = `${import.meta.env.VITE_BASE_URL || window.origin}/dav`.replace('http', 'dav');
 
@@ -59,7 +59,7 @@ const Profile = (): JSX.Element => {
         <Row label="Username" value={data?.me.username} />
         <Row label="Access Token">
           <Button
-            className="regenerate-button"
+            className={styles.regenerateButton}
             small
             intent={Intent.WARNING}
             icon="refresh"
@@ -71,13 +71,13 @@ const Profile = (): JSX.Element => {
       </Details>
 
       {regenerateData && (
-        <Callout className="callout" intent={Intent.WARNING} title="Your access token">
+        <Callout className={styles.callout} intent={Intent.WARNING} title="Your access token">
           <Pre>{regenerateData.regenerateAccessToken.token}</Pre>
           Save this somewhere safe, it will only be shown once!
         </Callout>
       )}
 
-      <Callout className="callout" intent={Intent.PRIMARY} title="Connecting with WebDAV">
+      <Callout className={styles.callout} intent={Intent.PRIMARY} title="Connecting with WebDAV">
         To connect using WebDAV, you will need the server&apos;s URL, your username, and your access token. Note that
         your password is not the same as your account&apos;s password.
         <br />

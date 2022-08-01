@@ -11,8 +11,7 @@ import { Entry as DirectoryEntry, EntryType } from '@lib/types';
 import BackButton from './components/BackButton';
 import Breadcrumb from './components/Breadcrumb';
 import Entry from './components/Entry';
-
-import './style.css';
+import styles from './style.module.css';
 
 const LIST_DIRECTORY = gql`
   query ListDirectory($path: String) {
@@ -110,7 +109,7 @@ const Files = (): JSX.Element => {
     <>
       <H1>Files</H1>
       <Breadcrumbs2 items={generateBreadcrumbs(path)} breadcrumbRenderer={Breadcrumb} />
-      <div className="files">
+      <div className={styles.wrapper}>
         {(loading || !data) && <Spinner />}
         {directories.length !== 0 && directories.map((entry) => <Entry key={entry.name} {...entry} />)}
         {files.length !== 0 && files.map((entry) => <Entry key={entry.name} {...entry} />)}

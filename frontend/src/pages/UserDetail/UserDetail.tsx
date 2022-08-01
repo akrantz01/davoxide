@@ -13,8 +13,7 @@ import AssignPermission from './components/AssignPermission';
 import DeleteButton from './components/DeleteButton';
 import EditableDefaultAccess from './components/EditableDefaultAccess';
 import PermissionRow from './components/PermissionRow';
-
-import './style.css';
+import styles from './style.module.css';
 
 const GET_USER = gql`
   query GetUser($username: String!) {
@@ -79,19 +78,23 @@ const UserDetail = (): JSX.Element => {
         <Row label="Name" value={data?.user.name} />
         <Row label="Username" value={data?.user.username} />
         <Row label="Default Access">
-          <EditableDefaultAccess className="default-access-button" user={username} action={data?.user.defaultAccess} />
+          <EditableDefaultAccess
+            className={styles.defaultAccessButton}
+            user={username}
+            action={data?.user.defaultAccess}
+          />
         </Row>
         {/* TODO: show access token status */}
       </Details>
 
-      <div className="user-permissions">
-        <div className="permissions-header">
+      <div className={styles.permissionsWrapper}>
+        <div className={styles.permissionsHeader}>
           <H3>Permissions:</H3>
           <AssignPermission user={username} />
         </div>
 
         <Table
-          className="permissions-table"
+          className={styles.permissionsTable}
           headers={['Path', 'Action', 'Includes Children?']}
           hasActions
           loading={loading}
@@ -109,7 +112,7 @@ const UserDetail = (): JSX.Element => {
         </Table>
       </div>
 
-      <div className="bottom-actions">
+      <div className={styles.actions}>
         <Link to="/admin" className={Classes.BUTTON}>
           <Icon icon="arrow-left" />
           <Text>Back</Text>

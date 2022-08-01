@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-import './navigation.css';
+import styles from './navigation.module.css';
 
 const GET_PROFILE = gql`
   query GetProfile {
@@ -42,8 +42,8 @@ const Navigation = (): JSX.Element => {
           </NavLink>
         )}
       </Navbar.Group>
-      <Navbar.Group align={Alignment.RIGHT} className="visible-sm">
-        <Icon icon="person" className="icon" />
+      <Navbar.Group align={Alignment.RIGHT} className={styles.visibleSm}>
+        <Icon icon="person" className={styles.icon} />
         {loading || !data ? (
           <Spinner size={25} />
         ) : (

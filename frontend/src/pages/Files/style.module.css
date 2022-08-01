@@ -1,12 +1,12 @@
-.files {
+.wrapper {
   margin: 1.5rem 0;
 }
 
-.files > * {
+.wrapper > * {
   padding: 1rem 0;
 }
 
-.files > * + * {
+.wrapper > * + * {
   border-color: #e5e7eb;
   border-top-width: 1px;
   border-top-style: solid;
