@@ -23,9 +23,10 @@ interface UpdateDefaultPermissionVariables {
 interface Props {
   user: string;
   action?: Action;
+  className?: string;
 }
 
-const EditableDefaultAccess = ({ action: defaultAction, user }: Props): JSX.Element => {
+const EditableDefaultAccess = ({ action: defaultAction, user, className }: Props): JSX.Element => {
   const [update, { loading, error }] = useMutation<void, UpdateDefaultPermissionVariables>(UPDATE_DEFAULT_PERMISSION, {
     refetchQueries: ['GetUser'],
   });
@@ -79,7 +80,13 @@ const EditableDefaultAccess = ({ action: defaultAction, user }: Props): JSX.Elem
         </div>
       </Dialog>
 
-      <ActionTag action={defaultAction} interactive rightIcon="edit" onClick={() => setOpen(true)} />
+      <ActionTag
+        className={className}
+        action={defaultAction}
+        interactive
+        rightIcon="edit"
+        onClick={() => setOpen(true)}
+      />
     </>
   );
 };

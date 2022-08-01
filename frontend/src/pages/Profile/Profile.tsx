@@ -1,8 +1,8 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
-import { Alert, Button, Callout, Classes, H1, H4, H5, Intent, Pre, Spinner, Text } from '@blueprintjs/core';
-import classNames from 'classnames';
+import { Alert, Button, Callout, H1, H5, Intent, Pre, Text } from '@blueprintjs/core';
 import React, { useEffect, useState } from 'react';
 
+import { Details, Row } from '@components/Details';
 import { usePageTitle } from '@lib/hooks';
 import { User } from '@lib/types';
 
@@ -37,18 +37,6 @@ interface RegenerateAccessToken {
   };
 }
 
-interface DetailProps {
-  label: string;
-  value?: string;
-}
-
-const Detail = ({ label, value }: DetailProps): JSX.Element => (
-  <div className="detail">
-    <H4>{label}:</H4>
-    <Text className={classNames(Classes.TEXT_LARGE, 'detail-value')}>{value ? value : <Spinner size={20} />}</Text>
-  </div>
-);
-
 const Profile = (): JSX.Element => {
   const { data } = useQuery<DetailedProfile>(GET_DETAILED_PROFILE);
   const [regenerate, { data: regenerateData, loading: regenerateLoading }] =
@@ -66,11 +54,10 @@ const Profile = (): JSX.Element => {
   return (
     <>
       <H1>Profile</H1>
-      <div className="details">
-        <Detail label="Name" value={data?.me.name} />
-        <Detail label="Username" value={data?.me.username} />
-        <div className="detail">
-          <H4>Access Token:</H4>
+      <Details>
+        <Row label="Name" value={data?.me.name} />
+        <Row label="Username" value={data?.me.username} />
+        <Row label="Access Token">
           <Button
             className="regenerate-button"
             small
@@ -80,8 +67,8 @@ const Profile = (): JSX.Element => {
             loading={regenerateLoading}
             onClick={() => setOpen(true)}
           />
-        </div>
-      </div>
+        </Row>
+      </Details>
 
       {regenerateData && (
         <Callout className="callout" intent={Intent.WARNING} title="Your access token">

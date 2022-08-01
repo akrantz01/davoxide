@@ -1,17 +1,4 @@
-.details {
-  margin-top: 1.5rem;
-}
-
-.detail {
-  display: flex;
-}
-
-.detail .detail-value {
-  margin-top: 0.1rem;
-  margin-left: 1rem;
-}
-
-.detail .regenerate-button {
+.regenerate-button {
   margin-left: 1rem;
   max-height: 1rem;
 }

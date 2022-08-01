@@ -1,5 +1,7 @@
-.user-details {
-  margin: 1.5rem 0;
+.default-access-button {
+  margin-left: 1rem;
+  margin-top: 0.1rem;
+  max-height: 1rem;
 }
 
 .user-permissions {

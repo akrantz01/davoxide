@@ -1,9 +1,9 @@
 import { gql, useQuery } from '@apollo/client';
-import { Classes, H1, H3, H5, Icon, Spinner, Text } from '@blueprintjs/core';
-import classNames from 'classnames';
-import React, { ReactNode, useEffect } from 'react';
+import { Classes, H1, H3, Icon, Text } from '@blueprintjs/core';
+import React, { useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
+import { Details, Row } from '@components/Details';
 import { NonIdealRow, Table } from '@components/Table';
 import { usePageTitle } from '@lib/hooks';
 import { danger, warning } from '@lib/toasts';
@@ -40,18 +40,6 @@ interface GetUserVariables {
   username: string;
 }
 
-interface DetailProps {
-  label: string;
-  value?: ReactNode;
-}
-
-const Detail = ({ label, value }: DetailProps): JSX.Element => (
-  <div className="detail">
-    <H5>{label}:</H5>
-    <Text className={classNames(Classes.TEXT_LARGE, 'detail-value')}>{value ? value : <Spinner size={20} />}</Text>
-  </div>
-);
-
 const UserDetail = (): JSX.Element => {
   const { username = '' } = useParams();
   usePageTitle(`Admin - ${username}`);
@@ -87,15 +75,14 @@ const UserDetail = (): JSX.Element => {
     <>
       <H1>User - {username}</H1>
 
-      <div className="user-details">
-        <Detail label="Name" value={data?.user.name} />
-        <Detail label="Username" value={data?.user.username} />
-        <Detail
-          label="Default Access"
-          value={<EditableDefaultAccess user={username} action={data?.user.defaultAccess} />}
-        />
+      <Details>
+        <Row label="Name" value={data?.user.name} />
+        <Row label="Username" value={data?.user.username} />
+        <Row label="Default Access">
+          <EditableDefaultAccess className="default-access-button" user={username} action={data?.user.defaultAccess} />
+        </Row>
         {/* TODO: show access token status */}
-      </div>
+      </Details>
 
       <div className="user-permissions">
         <div className="permissions-header">
