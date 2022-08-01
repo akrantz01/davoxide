@@ -17,6 +17,8 @@ mod logging;
 mod security;
 mod webdav;
 
+use security::{BasicAuth, SSOAuth};
+
 #[tokio::main]
 async fn main() -> eyre::Result<()> {
     color_eyre::install()?;
@@ -30,13 +32,22 @@ async fn main() -> eyre::Result<()> {
     let db = database::connect(&config.database_url).await?;
 
     // Configure routes
-    let app = Router::new()
+    // The webdav and frontend routers are kept separate due to their separate authentication requirements
+    let dav_router = Router::new()
         .route("/dav/*path", any(webdav::handler))
+        .layer(Extension(webdav::filesystem(&config.path)))
+        .layer(middleware::from_fn(security::ensure_authenticated))
+        .layer(middleware::from_fn(security::extract::<_, BasicAuth>))
+        .layer(middleware::from_fn(security::extract::<_, SSOAuth>));
+    let frontend_router = Router::new()
         .route("/api/graphql", post(graphql::handler))
         .fallback(frontend::fallback.into_service())
-        .layer(Extension(webdav::filesystem(&config.path)))
         .layer(Extension(graphql::schema(config.clone(), db.clone())))
-        .layer(middleware::from_fn(security::middleware))
+        .layer(middleware::from_fn(security::ensure_authenticated))
+        .layer(middleware::from_fn(security::extract::<_, SSOAuth>));
+    let app = Router::new()
+        .merge(dav_router)
+        .merge(frontend_router)
         .layer(Extension(db))
         .layer(logging::layer());
 

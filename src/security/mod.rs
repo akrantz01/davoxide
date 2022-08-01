@@ -4,7 +4,7 @@ use std::path::{Component, PathBuf};
 mod authentication;
 mod permissions;
 
-pub use authentication::middleware;
+pub use authentication::{ensure_authenticated, extract, BasicAuth, SSOAuth};
 pub use permissions::check_permissions;
 
 /// Sanitize a path, ensuring it does not escape the base directory

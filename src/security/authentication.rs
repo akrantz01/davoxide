@@ -5,7 +5,7 @@ use crate::{
 use axum::{
     headers::{
         authorization::{Authorization, Basic},
-        HeaderMap, HeaderMapExt,
+        HeaderMapExt,
     },
     http::Request,
     middleware::Next,
@@ -13,58 +13,75 @@ use axum::{
 };
 use sqlx::PgPool;
 
-/// Check that the user is authenticated for every request
-pub async fn middleware<B>(mut req: Request<B>, next: Next<B>) -> Result<Response> {
-    // Get the user's information
-    let user = load_user(&req).await?;
-    req.extensions_mut().insert(user);
+/// Check that there is an authenticated user
+pub async fn ensure_authenticated<B>(req: Request<B>, next: Next<B>) -> Result<Response> {
+    if req.extensions().get::<User>().is_none() {
+        Err(Error::Unauthorized)
+    } else {
+        Ok(next.run(req).await)
+    }
+}
+
+#[async_trait::async_trait]
+pub trait Extract {
+    async fn extract<B>(req: &Request<B>) -> Option<User>
+    where
+        B: Sync;
+}
+
+/// Attempt to extract a user from the request.
+/// NOTE: this does not fail if the user could not be loaded
+pub async fn extract<B, E>(mut req: Request<B>, next: Next<B>) -> Result<Response>
+where
+    B: Sync,
+    E: Extract,
+{
+    if let Some(user) = E::extract(&req).await {
+        req.extensions_mut().insert(user);
+    }
 
     Ok(next.run(req).await)
 }
 
-/// Extract user information from the request. The following methods are tried, in order:
-/// 1. SSO proxy headers (Remote-User & Remote-Name)
-/// 2. Basic authentication
-async fn load_user<B>(req: &Request<B>) -> Result<User> {
-    let headers = req.headers();
-    let db = req.extensions().get::<PgPool>().unwrap();
+/// Extract the user from SSO proxy headers (Remote-User & Remote-Name)
+pub struct SSOAuth;
 
-    // Try proxy auth first
-    if headers.contains_key("remote-user") && headers.contains_key("remote-name") {
-        let username = string_from_header(req.headers(), "remote-user")?;
-        let display_name = string_from_header(req.headers(), "remote-name")?;
+#[async_trait::async_trait]
+impl Extract for SSOAuth {
+    async fn extract<B>(req: &Request<B>) -> Option<User>
+    where
+        B: Sync,
+    {
+        let headers = req.headers();
+        let db = req.extensions().get::<PgPool>().unwrap();
 
-        let user = User::create_if_not_exists(db, &username, &display_name).await?;
-        Ok(user)
+        let username = headers.get("remote-user")?.to_str().ok()?;
+        let display_name = headers.get("remote-name")?.to_str().ok()?;
 
-        // Fallback to basic auth
-    } else if headers.contains_key("authorization") {
-        let credentials = headers
-            .typed_get::<Authorization<Basic>>()
-            .ok_or(Error::Unauthorized)?;
-
-        let user = User::get(db, credentials.username())
-            .await?
-            .ok_or(Error::Unauthorized)?;
-
-        if user.access_token_valid(credentials.password()) {
-            Ok(user)
-        } else {
-            Err(Error::Unauthorized)
-        }
-
-        // No credentials found
-    } else {
-        Err(Error::Unauthorized)
+        User::create_if_not_exists(db, username, display_name)
+            .await
+            .ok()
     }
 }
 
-fn string_from_header(headers: &HeaderMap, name: &str) -> Result<String> {
-    let value = headers
-        .get(name)
-        .ok_or(Error::Unauthorized)?
-        .to_str()
-        .map_err(|_| Error::Unauthorized)?
-        .to_owned();
-    Ok(value)
+/// Extract the user from HTTP basic authentication
+pub struct BasicAuth;
+
+#[async_trait::async_trait]
+impl Extract for BasicAuth {
+    async fn extract<B>(req: &Request<B>) -> Option<User>
+    where
+        B: Sync,
+    {
+        let headers = req.headers();
+        let db = req.extensions().get::<PgPool>().unwrap();
+
+        let credentials = headers.typed_get::<Authorization<Basic>>()?;
+        let user = User::get(db, credentials.username()).await.ok()??;
+
+        match user.access_token_valid(credentials.password()) {
+            true => Some(user),
+            false => None,
+        }
+    }
 }
