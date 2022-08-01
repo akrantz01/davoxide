@@ -1,4 +1,5 @@
 use super::{permission::Permission, types::Action};
+use crate::error::Error as DavoxideError;
 use argon2::{password_hash::SaltString, Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
 use async_graphql::{ComplexObject, Context, FieldResult, SimpleObject};
 use rand_core::OsRng;
@@ -185,6 +186,11 @@ impl User {
 impl User {
     #[graphql(name = "permissions")]
     async fn permissions_resolver(&self, ctx: &Context<'_>) -> FieldResult<Vec<Permission>> {
+        let current_user = ctx.data::<User>()?;
+        if !current_user.is_admin() {
+            return Err(DavoxideError::InvalidPermissions.into());
+        }
+
         let db = ctx.data::<PgPool>()?;
         let permissions = self.permissions(db).await?;
         Ok(permissions)
