@@ -1,5 +1,5 @@
 import { ApolloProvider } from '@apollo/client';
-import React from 'react';
+import React, { lazy } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
@@ -11,11 +11,12 @@ import '@blueprintjs/popover2/lib/css/blueprint-popover2.css';
 import { client } from '@lib/api';
 
 import Layout from './components/Layout';
-import Files from './pages/Files';
-import NotFound from './pages/NotFound';
-import Profile from './pages/Profile';
-import UserDetail from './pages/UserDetail';
-import UsersList from './pages/UsersList';
+
+const Files = lazy(() => import('./pages/Files'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const Profile = lazy(() => import('./pages/Profile'));
+const UserDetail = lazy(() => import('./pages/UserDetail'));
+const UsersList = lazy(() => import('./pages/UsersList'));
 
 const root = document.getElementById('root') as HTMLElement;
 createRoot(root).render(
