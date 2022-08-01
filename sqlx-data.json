@@ -1,0 +1,353 @@
+{
+  "db": "PostgreSQL",
+  "33c4cb3bb1675de38c7c438de08cff5a05f04c0a1a5a1703eaf975a216be6a75": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "DELETE FROM users WHERE username = $1"
+  },
+  "4399e2a31ed397be606cd4ca03515bd9e2d76c56b0c90c570e8651a3616794bf": {
+    "describe": {
+      "columns": [
+        {
+          "name": "username",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "access_token",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "default_access: _",
+          "ordinal": 3,
+          "type_info": {
+            "Custom": {
+              "kind": {
+                "Enum": [
+                  "deny",
+                  "read",
+                  "modify",
+                  "admin"
+                ]
+              },
+              "name": "action"
+            }
+          }
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        true,
+        false
+      ],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "SELECT username, name, access_token, default_access as \"default_access: _\" FROM users"
+  },
+  "5ca7bf4684d7d1b572ff49791e441808d3def11037ba2f0825f09bbbe1920444": {
+    "describe": {
+      "columns": [
+        {
+          "name": "username",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "access_token",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "default_access: _",
+          "ordinal": 3,
+          "type_info": {
+            "Custom": {
+              "kind": {
+                "Enum": [
+                  "deny",
+                  "read",
+                  "modify",
+                  "admin"
+                ]
+              },
+              "name": "action"
+            }
+          }
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        true,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "SELECT username, name, access_token, default_access as \"default_access: _\" FROM users WHERE username = $1"
+  },
+  "74d25a59fd4a0688b2b27bef2d891930053b0066b0640292f2c35f93bb38242d": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "UPDATE users SET access_token = null WHERE username = $1"
+  },
+  "7a42108ababf6d9a541d56f52ea853114829d3dedd2b31d52fb127e84220a54e": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "DELETE FROM permissions WHERE id = $1"
+  },
+  "873c319b71fa109ad0c1189382598ef26a94da57efcdc78881dba9265280ce5f": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "applies_to",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "path",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "action: _",
+          "ordinal": 3,
+          "type_info": {
+            "Custom": {
+              "kind": {
+                "Enum": [
+                  "deny",
+                  "read",
+                  "modify",
+                  "admin"
+                ]
+              },
+              "name": "action"
+            }
+          }
+        },
+        {
+          "name": "affects_children",
+          "ordinal": 4,
+          "type_info": "Bool"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text",
+          {
+            "Custom": {
+              "kind": {
+                "Enum": [
+                  "deny",
+                  "read",
+                  "modify",
+                  "admin"
+                ]
+              },
+              "name": "action"
+            }
+          },
+          "Bool"
+        ]
+      }
+    },
+    "query": "INSERT INTO permissions (applies_to, path, action, affects_children) VALUES ($1, $2, $3, $4) RETURNING id, applies_to, path, action as \"action: _\", affects_children"
+  },
+  "a2c7f2c53f67d27c62046c9495fce7907ffa5ec7bbcf015e13e40f18b1fc4202": {
+    "describe": {
+      "columns": [
+        {
+          "name": "username",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "access_token",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "default_access: _",
+          "ordinal": 3,
+          "type_info": {
+            "Custom": {
+              "kind": {
+                "Enum": [
+                  "deny",
+                  "read",
+                  "modify",
+                  "admin"
+                ]
+              },
+              "name": "action"
+            }
+          }
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        true,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text"
+        ]
+      }
+    },
+    "query": "INSERT INTO users (username, name) VALUES ($1, $2) ON CONFLICT (username) DO UPDATE SET name = excluded.name RETURNING username, name, access_token, default_access as \"default_access: _\""
+  },
+  "b548656e889452fe25a627b48c88eb6bafee27d84fd2625ca3d31d6b67fc0168": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          {
+            "Custom": {
+              "kind": {
+                "Enum": [
+                  "deny",
+                  "read",
+                  "modify",
+                  "admin"
+                ]
+              },
+              "name": "action"
+            }
+          },
+          "Text"
+        ]
+      }
+    },
+    "query": "UPDATE users SET default_access = $1 WHERE username = $2"
+  },
+  "c4885998b2577dfedb9132f1217bb5333ff21b5ae62a82bfc3498f013b1ba6af": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text"
+        ]
+      }
+    },
+    "query": "UPDATE users SET access_token = $1 WHERE username = $2"
+  },
+  "e509481d5005e43158ddabe5b6ae492512358a8f6bc8f25cb2af8d12106600df": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "applies_to",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "path",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "action: _",
+          "ordinal": 3,
+          "type_info": {
+            "Custom": {
+              "kind": {
+                "Enum": [
+                  "deny",
+                  "read",
+                  "modify",
+                  "admin"
+                ]
+              },
+              "name": "action"
+            }
+          }
+        },
+        {
+          "name": "affects_children",
+          "ordinal": 4,
+          "type_info": "Bool"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "SELECT id, applies_to, path, action as \"action: _\", affects_children FROM permissions WHERE applies_to = $1"
+  }
+}
