@@ -1,5 +1,6 @@
 import { ApolloProvider } from '@apollo/client';
-import React, { lazy } from 'react';
+import { Spinner } from '@blueprintjs/core';
+import React, { Suspense, lazy } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
@@ -24,14 +25,16 @@ createRoot(root).render(
     <ApolloProvider client={client}>
       <BrowserRouter>
         <Layout>
-          <Routes>
-            <Route index element={<Files />} />
-            <Route path="/files/*" element={<Files />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/admin" element={<UsersList />} />
-            <Route path="/admin/:username" element={<UserDetail />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<Spinner />}>
+            <Routes>
+              <Route index element={<Files />} />
+              <Route path="/files/*" element={<Files />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/admin" element={<UsersList />} />
+              <Route path="/admin/:username" element={<UserDetail />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </Layout>
       </BrowserRouter>
     </ApolloProvider>
