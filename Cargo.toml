@@ -11,6 +11,7 @@ edition = "2021"
 argon2 = "0.4.1"
 async-graphql = { version = "4.0.5", default-features = false, features = ["time", "tracing"] }
 async-graphql-axum = "4.0.5"
+async-trait = "0.1.56"
 axum = { version = "0.5.13", default-features = false, features = ["headers", "http1", "http2"] }
 color-eyre = { version = "0.6.2", default-features = false, features = ["track-caller"] }
 dav-server = { version = "0.4.0", default-features = false, features = ["localfs"] }

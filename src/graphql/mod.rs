@@ -1,14 +1,16 @@
 use crate::{config::Config, database::User};
-use async_graphql::{EmptySubscription, Schema as BaseSchema};
+use async_graphql::{extensions, EmptySubscription, Schema as BaseSchema};
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::Extension;
 use sqlx::PgPool;
 use std::sync::Arc;
 
 mod fs;
+mod logging;
 mod mutation;
 mod outputs;
 mod query;
+mod tracing;
 
 type Schema = BaseSchema<query::Query, mutation::Mutation, EmptySubscription>;
 
@@ -17,6 +19,9 @@ pub fn schema(config: Arc<Config>, db: PgPool) -> Schema {
     Schema::build(query::Query, mutation::Mutation, EmptySubscription)
         .data(config)
         .data(db)
+        .extension(extensions::Analyzer)
+        .extension(tracing::Tracing)
+        .extension(logging::Logger)
         .finish()
 }
 
