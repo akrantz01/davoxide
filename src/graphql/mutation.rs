@@ -22,10 +22,15 @@ impl Mutation {
         Ok(RegenerateAccessTokenResult { token })
     }
 
-    async fn revoke_access_token(&self, ctx: &Context<'_>) -> Result<User> {
+    async fn revoke_access_token(&self, ctx: &Context<'_>, username: String) -> Result<User> {
         let user = ctx.data::<User>()?;
+        if !user.is_admin() {
+            return Err(Error::InvalidPermissions.into());
+        }
+
         let db = ctx.data::<PgPool>()?;
 
+        let user = User::get(db, &username).await?.ok_or(Error::NotFound)?;
         user.revoke_access_token(db).await?;
 
         Ok(user.clone())
