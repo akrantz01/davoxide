@@ -38,5 +38,6 @@ export interface User {
   name: string;
   username: string;
   defaultAccess: Action;
+  hasAccessToken: boolean;
   permissions: Permission[];
 }

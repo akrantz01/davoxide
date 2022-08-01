@@ -184,6 +184,15 @@ impl User {
 
 #[ComplexObject]
 impl User {
+    async fn has_access_token(&self, ctx: &Context<'_>) -> FieldResult<bool> {
+        let current_user = ctx.data::<User>()?;
+        if !current_user.is_admin() {
+            return Err(DavoxideError::InvalidPermissions.into());
+        }
+
+        Ok(self.access_token.is_some())
+    }
+
     #[graphql(name = "permissions")]
     async fn permissions_resolver(&self, ctx: &Context<'_>) -> FieldResult<Vec<Permission>> {
         let current_user = ctx.data::<User>()?;
