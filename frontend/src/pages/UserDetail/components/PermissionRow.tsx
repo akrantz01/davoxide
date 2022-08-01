@@ -4,6 +4,7 @@ import { Tooltip2 } from '@blueprintjs/popover2';
 import React, { useEffect, useState } from 'react';
 
 import ActionTag from '@components/ActionTag';
+import { ActionsColumn } from '@components/Table';
 import { danger } from '@lib/toasts';
 import { Permission } from '@lib/types';
 
@@ -48,11 +49,11 @@ const PermissionRow = (permission: Permission): JSX.Element => {
             {permission.affectsChildren ? 'Yes' : 'No'}
           </Tag>
         </td>
-        <td className="actions">
+        <ActionsColumn>
           <Tooltip2 content="Delete" intent={Intent.DANGER} position={Position.LEFT}>
             <Button icon="trash" intent={Intent.DANGER} minimal onClick={() => setOpen(true)} />
           </Tooltip2>
-        </td>
+        </ActionsColumn>
       </tr>
 
       <Alert

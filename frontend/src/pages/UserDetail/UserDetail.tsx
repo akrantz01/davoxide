@@ -1,9 +1,10 @@
 import { gql, useQuery } from '@apollo/client';
-import { Classes, H1, H3, H5, HTMLTable, Icon, NonIdealState, Spinner, Text } from '@blueprintjs/core';
+import { Classes, H1, H3, H5, Icon, Spinner, Text } from '@blueprintjs/core';
 import classNames from 'classnames';
 import React, { ReactNode, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
+import { NonIdealRow, Table } from '@components/Table';
 import { usePageTitle } from '@lib/hooks';
 import { danger, warning } from '@lib/toasts';
 import { User } from '@lib/types';
@@ -49,18 +50,6 @@ const Detail = ({ label, value }: DetailProps): JSX.Element => (
     <H5>{label}:</H5>
     <Text className={classNames(Classes.TEXT_LARGE, 'detail-value')}>{value ? value : <Spinner size={20} />}</Text>
   </div>
-);
-
-interface CenteredRowProps {
-  children: ReactNode;
-}
-
-const CenteredRow = ({ children }: CenteredRowProps): JSX.Element => (
-  <tr>
-    <td colSpan={4}>
-      <div className="centered-row">{children}</div>
-    </td>
-  </tr>
 );
 
 const UserDetail = (): JSX.Element => {
@@ -114,37 +103,23 @@ const UserDetail = (): JSX.Element => {
           <AssignPermission user={username} />
         </div>
 
-        <HTMLTable className="permissions-table">
-          <thead>
-            <tr>
-              <th scope="col">Path</th>
-              <th scope="col">Action</th>
-              <th scope="col">Includes Children?</th>
-              <th scope="col" className="hidden-column">
-                <span>Actions</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading && (
-              <CenteredRow>
-                <Spinner />
-              </CenteredRow>
-            )}
-            {!loading && permissions.length === 0 && (
-              <CenteredRow>
-                <NonIdealState
-                  icon="help"
-                  title="No permissions found"
-                  description="Get started by assigning a new permission to the user."
-                />
-              </CenteredRow>
-            )}
-            {permissions.map((p) => (
-              <PermissionRow key={p.id} {...p} />
-            ))}
-          </tbody>
-        </HTMLTable>
+        <Table
+          className="permissions-table"
+          headers={['Path', 'Action', 'Includes Children?']}
+          hasActions
+          loading={loading}
+        >
+          {permissions.length === 0 && (
+            <NonIdealRow
+              icon="help"
+              title="No permissions found"
+              description="Get started by assigning a new permission to the user."
+            />
+          )}
+          {permissions.map((p) => (
+            <PermissionRow key={p.id} {...p} />
+          ))}
+        </Table>
       </div>
 
       <div className="bottom-actions">
