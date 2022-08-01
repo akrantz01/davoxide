@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 
 import { Details, Row } from '@components/Details';
 import { usePageTitle } from '@lib/hooks';
+import { success } from '@lib/toasts';
 import { User } from '@lib/types';
 
 import styles from './style.module.css';
@@ -51,6 +52,11 @@ const Profile = (): JSX.Element => {
     if (!regenerateLoading) setOpen(false);
   }, [regenerateLoading]);
 
+  const onCopy = async () => {
+    await navigator.clipboard.writeText(regenerateData?.regenerateAccessToken.token || '');
+    success('Copied access token to clipboard');
+  };
+
   return (
     <>
       <H1>Profile</H1>
@@ -72,7 +78,10 @@ const Profile = (): JSX.Element => {
 
       {regenerateData && (
         <Callout className={styles.callout} intent={Intent.WARNING} title="Your access token">
-          <Pre>{regenerateData.regenerateAccessToken.token}</Pre>
+          <div className={styles.generatedToken}>
+            <Pre className={styles.token}>{regenerateData.regenerateAccessToken.token}</Pre>
+            <Button className={styles.copy} large outlined icon="clipboard" onClick={onCopy} />
+          </div>
           Save this somewhere safe, it will only be shown once!
         </Callout>
       )}
