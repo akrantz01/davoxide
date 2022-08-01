@@ -13,6 +13,7 @@ import AssignPermission from './components/AssignPermission';
 import DeleteButton from './components/DeleteButton';
 import EditableDefaultAccess from './components/EditableDefaultAccess';
 import PermissionRow from './components/PermissionRow';
+import RevokeAccessToken from './components/RevokeAccessToken';
 import styles from './style.module.css';
 
 const GET_USER = gql`
@@ -21,6 +22,7 @@ const GET_USER = gql`
       name
       username
       defaultAccess
+      hasAccessToken
       permissions {
         id
         action
@@ -84,7 +86,9 @@ const UserDetail = (): JSX.Element => {
             action={data?.user.defaultAccess}
           />
         </Row>
-        {/* TODO: show access token status */}
+        <Row label="Access Token" value={data?.user.hasAccessToken === false ? 'None' : undefined}>
+          {data?.user.hasAccessToken && <RevokeAccessToken user={username} />}
+        </Row>
       </Details>
 
       <div className={styles.permissionsWrapper}>
