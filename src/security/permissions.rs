@@ -4,6 +4,7 @@ use crate::{
 };
 use sqlx::PgPool;
 use std::path::Path;
+use tracing::warn;
 
 /// Check the user's permissions are sufficient for the requested action and path
 pub async fn check_permissions(
@@ -17,6 +18,7 @@ pub async fn check_permissions(
         let effective = effective_permission(permissions, user.default_access, path);
 
         if effective < required {
+            warn!(?effective, ?required, resource = %path.display(), "invalid permissions for resource");
             return Err(Error::InvalidPermissions);
         }
     }
