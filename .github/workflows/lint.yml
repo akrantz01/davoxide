@@ -28,5 +28,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
+
       - run: cargo fmt --all --check
+
+      # This is a workaround to prevent embedding from failing
+      - run: mkdir -p frontend/dist && touch frontend/dist/tempfile
       - run: cargo clippy -- -D warnings
