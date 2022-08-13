@@ -24,6 +24,19 @@ jobs:
           cache-dependency-path: frontend/yarn.lock
       - uses: dtolnay/rust-toolchain@stable
 
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ github.job }}-${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ github.job }}-${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-
+            ${{ github.job }}-${{ runner.os }}-cargo-
+
       - run: yarn install --ignore-scripts
         working-directory: frontend
       - run: yarn build
