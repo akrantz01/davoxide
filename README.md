@@ -1,9 +1,8 @@
 # DAVOxide
 > A simple WebDAV server with a basic web UI, authentication, and permissions.
 
-![Docker Pulls](https://img.shields.io/docker/pulls/akrantz/davoxide?style=for-the-badge)
-![Docker Image Version (latest semver)](https://img.shields.io/docker/v/akrantz/davoxide?style=for-the-badge)
-![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/akrantz/davoxide?style=for-the-badge)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/akrantz01/davoxide/Build/main?style=for-the-badge)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/akrantz01/davoxide?style=for-the-badge)
 
 DAVOxide provides a simple and lightweight interface to a folder on your server through WebDAV and a simple web UI.
 Most operations are intended to be performed over WebDAV such as modifying files or directories.
@@ -25,7 +24,7 @@ docker run -d --name davoxide \
     -e BASE_PATH=/files \
     -e DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5432/postgres \
     -v $PWD:/files \
-    akrantz/davoxide:latest
+    ghcr.io/akrantz01/davoxide:latest
 ```
 
 ## Usage
