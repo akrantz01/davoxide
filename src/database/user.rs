@@ -7,7 +7,7 @@ use sqlx::{Error, PgPool, Result};
 use uuid::Uuid;
 
 /// An individual user with access to the application
-#[derive(Clone, Debug, PartialEq, SimpleObject)]
+#[derive(Clone, Debug, Eq, PartialEq, SimpleObject)]
 #[graphql(complex)]
 pub struct User {
     pub username: String,

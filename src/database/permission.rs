@@ -2,7 +2,7 @@ use super::types::Action;
 use async_graphql::SimpleObject;
 use sqlx::{PgPool, Result};
 
-#[derive(Clone, Debug, PartialEq, SimpleObject)]
+#[derive(Clone, Debug, Eq, PartialEq, SimpleObject)]
 pub struct Permission {
     pub id: i32,
     #[graphql(skip)]
