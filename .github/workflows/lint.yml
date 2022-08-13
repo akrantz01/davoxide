@@ -1,0 +1,32 @@
+name: Lint
+
+on:
+  - push
+
+jobs:
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: frontend/.node-version
+          cache: yarn
+          cache-dependency-file: frontend/yarn.lock
+
+      - run: yarn install --ignore-scripts
+        working-directory: frontend
+
+      - run: yarn lint
+        working-directory: frontend
+
+  backend:
+    name: Backend
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo fmt --all --check
+      - run: cargo clippy -- -D warnings
