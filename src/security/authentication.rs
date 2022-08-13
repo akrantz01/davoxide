@@ -12,13 +12,15 @@ use axum::{
     response::Response,
 };
 use sqlx::PgPool;
+use tracing::info;
 
 /// Check that there is an authenticated user
 pub async fn ensure_authenticated<B>(req: Request<B>, next: Next<B>) -> Result<Response> {
-    if req.extensions().get::<User>().is_none() {
-        Err(Error::Unauthorized)
-    } else {
+    if let Some(user) = req.extensions().get::<User>() {
+        info!(user = %user.username, "authenticated");
         Ok(next.run(req).await)
+    } else {
+        Err(Error::Unauthorized)
     }
 }
 
