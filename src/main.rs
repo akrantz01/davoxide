@@ -34,6 +34,7 @@ async fn main() -> eyre::Result<()> {
     // Configure routes
     // The webdav and frontend routers are kept separate due to their separate authentication requirements
     let dav_router = Router::new()
+        .route("/dav", any(webdav::handler))
         .route("/dav/*path", any(webdav::handler))
         .layer(Extension(webdav::filesystem(&config.path)))
         .layer(middleware::from_fn(security::ensure_authenticated))
